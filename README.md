@@ -22,11 +22,15 @@
 
 4. Rodar o script de banco "/sei/scripts/sei_instalar_modulo_pesquisa.php" em linha de comando no servidor do SEI, verificando se não houve erro em sua execução, em que ao final do log deverá ser informado "FIM". Exemplo de comando de execução:
 
-		/usr/bin/php -c /etc/php.ini /var/www/html/sei/scripts/sei_instalar_modulo_pesquisa.php > atualizacao_modulo_pesquisa_sei.log
+```bash
+/usr/bin/php -c /etc/php.ini /var/www/html/sei/scripts/sei_instalar_modulo_pesquisa.php > atualizacao_modulo_pesquisa_sei.log
+```
 
 5. Rodar o script de banco "/sip/scripts/sip_instalar_modulo_pesquisa.php" em linha de comando no servidor do SIP, verificando se não houve erro em sua execução, em que ao final do log deverá ser informado "FIM". Exemplo de comando de execução:
 
-		/usr/bin/php -c /etc/php.ini /var/www/html/sip/scripts/sip_instalar_modulo_pesquisa.php > atualizacao_modulo_pesquisa_sip.log
+```bash
+/usr/bin/php -c /etc/php.ini /var/www/html/sip/scripts/sip_instalar_modulo_pesquisa.php > atualizacao_modulo_pesquisa_sip.log
+```
 
 6. Após a execução com sucesso dos dois scripts de banco acima, com um usuário com permissão de Administrador no SEI, abra o menu de configuração do módulo no SEI (Administração > Pesquisa Pública > Parâmetros Pesquisa Pública) e verifique as opções de configuração.
 
@@ -36,7 +40,7 @@ Obs. (Não se esqueça de alterar o campo "Chave para criptografia dos links de 
 	http://[Servidor_PHP]/sei/modulos/pesquisa/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=0
 
 8. Em caso de erro durante a execução dos dois script de banco verificar (lendo as mensagens de erro,no SEI em Infra > Log e no SIP em Infra > Log) se a causa foi algum problema na infra-estrutura local. Neste caso, após a correção, restaurar o backup do banco de dados e executar novamente os scripts indicados nos itens 4 e 5 acima.
-	- Caso não seja possível identificar a causa, abrir Issue no projeto do módulo no Gitlab do Portal do SPB: https://softwarepublico.gov.br/gitlab/cade/mod-sei-pesquisa
+	- Caso não seja possível identificar a causa, abrir Issue no projeto do módulo no Gitlab do Portal do SPB: `https://github.com/cadegovbr/mod-sei-pesquisa/issues`
 
 ## Orientações Negociais:
 
