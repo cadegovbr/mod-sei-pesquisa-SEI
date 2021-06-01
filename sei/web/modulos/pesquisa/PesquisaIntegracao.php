@@ -2,7 +2,7 @@
 	class PesquisaIntegracao extends SeiIntegracao {
 		
 		public function getNome(){
-			return 'MÃ³dulo de Pesquisa PÃºblica';
+			return 'Módulo de Pesquisa Pública';
 		}
 		
 		public function getVersao() {
@@ -10,7 +10,7 @@
 		}
 		
 		public function getInstituicao(){
-			return 'CADE - Conselho Administrativo de Defesa EconÃ´mica';
+			return 'CADE - Conselho Administrativo de Defesa Econômica';
 		}
 		
 		public function processarControlador($strAcao){
@@ -79,7 +79,7 @@
 				if(is_array($arrModulos) && array_key_exists('PesquisaIntegracao', $arrModulos)){
 					$caminho = $arrModulos['PesquisaIntegracao'];
 					$arrMenu = array();
-					$arrMenu[] = '-^'.ConfiguracaoSEI::getInstance()->getValor('SEI','URL').'/modulos/'.$caminho.'/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=0^^Pesquisa PÃºblica^_blank^';
+					$arrMenu[] = '-^'.ConfiguracaoSEI::getInstance()->getValor('SEI','URL').'/modulos/'.$caminho.'/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=0^^Pesquisa Pública^_blank^';
 						
 					return $arrMenu;
 						
