@@ -136,7 +136,7 @@ class MdPesqParametroPesquisaRN extends InfraRN {
 
 		//versão do parametro é igual ou maior que a enviada
 		if (!is_null($versao)){
-			if (count($arrObjInfraParametroDTO)>0){
+			if ($arrObjInfraParametroDTO){
 				$arr_versao_parametro = explode('.',$arrObjInfraParametroDTO->getStrValor());
 				$arr_versao = explode('.',$versao);
 				for ($i=0;$i<count($arr_versao_parametro);$i++){

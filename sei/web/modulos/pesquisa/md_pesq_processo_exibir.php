@@ -192,7 +192,7 @@ try {
       
       	$objDocumentoDTO = $objRelProtocoloProtocoloDTO->getObjProtocoloDTO2();
       	//valida documentos para retornar
-   	  	if ($objDocumentoRN->verificarSelecaoAcessoExterno($objDocumentoDTO)){
+   	  	if ($objDocumentoRN->verificarSelecaoAcessoBasico($objDocumentoDTO)){
    	  	
    	  		$objProtocoloPesquisaPublicaDTO = new MdPesqProtocoloPesquisaPublicaDTO();
    	  		$objProtocoloPesquisaPublicaDTO->setStrNumeroSEI($objDocumentoDTO->getStrProtocoloDocumentoFormatado());
@@ -350,7 +350,7 @@ try {
 				}else{
 					$strResultado .= '<td align="center"><span class="retiraAncoraPadraoAzul">'.$objDocumentoDTO->getStrProtocoloDocumentoFormatado().'</span>';
 					$strResultado .= '<img src="/infra_css/imagens/espaco.gif">';
-					$strResultado .= '<img src="../peticionamento/imagens/intimacao_nao_cumprida_doc_anexo.png" align="absbottom"  title="Acesso Restrito.&#13'.'Documento com acesso restrito provisoriamente em razão de Intimação Eletrônica ainda não cumprida">';
+					$strResultado .= '<img src="../peticionamento/imagens/png/intimacao_nao_cumprida_doc_anexo.png" style="width: 20px; margin-bottom: -3px;" align="absbottom"  title="Acesso Restrito.&#13'.'Documento com acesso restrito provisoriamente em razão de Intimação Eletrônica ainda não cumprida">';
 				}
 
 			}else{
@@ -669,9 +669,8 @@ table caption {
 #tblHistorico {margin-top:1.5em;}
 
 <? if($bolCaptchaGerarPdf) { ?>
-#lblCaptcha {position: absolute; top:30%; left: 20%; width: 80%}
-#txtCaptcha{position: absolute; top:56%; left: 20%; height:15%; width:56%;font-size: 3em;}
-#btnEnviarCaptcha {position: absolute; top:80%; left: 20%; width:56%}
+
+
 
 #divInfraModal{
 	
@@ -686,7 +685,6 @@ table caption {
     overflow: auto;
    
 }
-
 
 
 .close {
@@ -708,7 +706,9 @@ table caption {
     background-image: url("imagens/bg_barra_sistema.jpg");
     color: white;
 }
-
+    div {
+    margin: 0 auto 0 auto;
+    }
 .modal-body {padding: 2px 16px;}
 
 .modal-footer {
@@ -823,11 +823,22 @@ if($bolCaptchaGerarPdf){
     			</div>
  				<div class="modal-body">
  		   			<label id="lblCaptcha" accesskey="" class="infraLabelObrigatorio">
-		   			<img src="/infra_js/infra_gerar_captcha.php?codetorandom='.$strCodigoParaGeracaoCaptcha.'" alt="Não foi possível carregar imagem de confirmação" /> </label>
-		   			<input type="text" id="txtCaptcha" name="txtCaptcha" class="infraText" maxlength="4" value="" />
-  					<button id="btnEnviarCaptcha" type="submit" accesskey="G" name="btnEnviarCaptcha" value="Enviar" onclick="gerarPdf();" class="infraButton"><span class="infraTeclaAtalho">E</span>nviar</button>
-  		   		</div>
-    			
+ 		   			<div class="row">
+ 		   			    <div class="col-sm-9 col-md-9 col-lg-9 col-xl-9">
+ 		   			        <img src="/infra_js/infra_gerar_captcha.php?codetorandom='.$strCodigoParaGeracaoCaptcha.'" alt="Não foi possível carregar imagem de confirmação" /> </label>    
+                        </div>
+                    </div>
+                    <div class="row">
+ 		   			    <div class="col-sm-9 col-md-9 col-lg-9 col-xl-9">
+         		   			<input type="text" id="txtCaptcha" name="txtCaptcha" class="infraText form-control" maxlength="4" value="" /> 		   			    
+                        </div>
+                    </div>
+                    <div class="row">
+ 		   			    <div class="col-sm-9 col-md-9 col-lg-9 col-xl-9 text-center">
+ 		   			        <button id="btnEnviarCaptcha" type="submit" accesskey="G" name="btnEnviarCaptcha" value="Enviar" onclick="gerarPdf();" class="infraButton"><span class="infraTeclaAtalho">E</span>nviar</button>    
+                        </div>
+                    </div>
+  		   		</div>    			
   			</div>
     	</div>
   			';
