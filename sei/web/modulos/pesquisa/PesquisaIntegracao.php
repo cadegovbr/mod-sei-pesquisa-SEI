@@ -6,7 +6,7 @@
 		}
 		
 		public function getVersao() {
-			return '3.0.6';
+			return '4.0.0';
 		}
 		
 		public function getInstituicao(){
