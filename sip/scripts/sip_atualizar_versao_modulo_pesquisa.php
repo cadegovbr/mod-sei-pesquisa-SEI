@@ -1,20 +1,7 @@
 <?
-/**
- * CONSELHO ADMINISTRATIVO DE DEFESA ECONOMICA
- *
- * 21/05/2016 - criado por alex.braga
- *
- *
- */
-
 require_once dirname(__FILE__) . '/../web/Sip.php';
 
-set_include_path(implode(PATH_SEPARATOR, array(
-    realpath(__DIR__ . '/../../infra/infra_php'),
-    get_include_path(),
-)));
-
-class AtualizadorSipModuloPesquisaRN extends InfraRN
+class MdPesqAtualizadorSipRN extends InfraRN
 {
 
     private $numSeg = 0;
@@ -26,7 +13,11 @@ class AtualizadorSipModuloPesquisaRN extends InfraRN
     public function __construct()
     {
         parent::__construct();
-        $this->inicializar(' SIP - INICIALIZAR ');
+    }
+
+    protected function getHistoricoVersoes()
+    {
+        return $this->historicoVersoes;
     }
 
     protected function inicializarObjInfraIBanco()
@@ -34,38 +25,37 @@ class AtualizadorSipModuloPesquisaRN extends InfraRN
         return BancoSip::getInstance();
     }
 
-    protected function inicializar($strTitulo)
+    /**
+     * Inicia o script criando um contator interno do tempo de execução
+     *
+     * @return null
+     */
+	protected function inicializar($strTitulo)
     {
+        session_start();
         SessaoSip::getInstance(false);
 
         ini_set('max_execution_time', '0');
         ini_set('memory_limit', '-1');
-        @ini_set('zlib.output_compression', '0');
         @ini_set('implicit_flush', '1');
         ob_implicit_flush();
 
-        $this->objDebug = InfraDebug::getInstance();
-        $this->objDebug->setBolLigado(true);
-        $this->objDebug->setBolDebugInfra(true);
-        $this->objDebug->setBolEcho(true);
-        $this->objDebug->limpar();
+        InfraDebug::getInstance()->setBolLigado(true);
+        InfraDebug::getInstance()->setBolDebugInfra(true);
+        InfraDebug::getInstance()->setBolEcho(true);
+        InfraDebug::getInstance()->limpar();
 
         $this->numSeg = InfraUtil::verificarTempoProcessamento();
-        $this->logar($strTitulo);
 
+        $this->logar($strTitulo);
     }
 
     protected function logar($strMsg)
     {
-        $this->objDebug->gravar($strMsg);
+        InfraDebug::getInstance()->gravar($strMsg);
         flush();
     }
 
-    /**
-     * Finaliza o script informando o tempo de execução.
-     *
-     * @return null
-     */
     protected function finalizar($strMsg = null, $bolErro = false)
     {
         if (!$bolErro) {
@@ -453,6 +443,7 @@ class AtualizadorSipModuloPesquisaRN extends InfraRN
             $objItemMenuDTO->setNumSequencia($numSequencia);
             $objItemMenuDTO->setStrSinNovaJanela('N');
             $objItemMenuDTO->setStrSinAtivo('S');
+            $objItemMenuDTO->setStrIcone(null);
             $objItemMenuDTO = $objItemMenuRN->cadastrar($objItemMenuDTO);
         }
 
@@ -568,24 +559,19 @@ class AtualizadorSipModuloPesquisaRN extends InfraRN
     }
 }
 
-//========================= INICIO SCRIPT EXECUÇAO =============
-
 try {
 
-    session_start();
-
     SessaoSip::getInstance(false);
+    BancoSip::getInstance()->setBolScript(true);
 
-    $objVersaoRN = new AtualizadorSipModuloPesquisaRN();
+    $objVersaoRN = new MdPesqAtualizadorSipRN();
     $objVersaoRN->atualizarVersao();
 
 } catch (Exception $e) {
-    echo(nl2br(InfraException::inspecionar($e)));
+    echo(InfraException::inspecionar($e));
     try {
         LogSip::getInstance()->gravar(InfraException::inspecionar($e));
     } catch (Exception $e) {
     }
+    exit(1);
 }
-
-//========================== FIM SCRIPT EXECUÇÂO ====================
-?>
