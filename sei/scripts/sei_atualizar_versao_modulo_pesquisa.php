@@ -139,7 +139,7 @@ class MdPesqAtualizadorSeiRN extends InfraRN
 
         BancoSEI::getInstance()->executarSql(' CREATE TABLE md_pesq_parametro (
 					nome ' . $objInfraMetaBD->tipoTextoVariavel(100) . ' NOT NULL , 
-					valor ' . $objInfraMetaBD->tipoTextoGrande() . '
+					valor ' . $objInfraMetaBD->tipoTextoGrande() . ' NULL
 					)');
         $objInfraMetaBD->adicionarChavePrimaria('md_pesq_parametro', 'pk_md_pesq_parametro', array('nome'));
 
@@ -159,7 +159,7 @@ class MdPesqAtualizadorSeiRN extends InfraRN
             array('Nome' => MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO, 'Valor' => 'S'),
             array('Nome' => MdPesqParametroPesquisaRN::$TA_AUTO_COMPLETAR_INTERESSADO, 'Valor' => 'S'),
             array('Nome' => MdPesqParametroPesquisaRN::$TA_MENU_USUARIO_EXTERNO, 'Valor' => 'S'),
-            array('Nome' => MdPesqParametroPesquisaRN::$TA_CHAVE_CRIPTOGRAFIA, 'Valor' => ''),
+            array('Nome' => MdPesqParametroPesquisaRN::$TA_CHAVE_CRIPTOGRAFIA, 'Valor' => null),
         );
 
         $arrObjParametroPesquisaDTO = InfraArray::gerarArrInfraDTOMultiAtributos('MdPesqParametroPesquisaDTO', $arrParametroPesquisaDTO);
@@ -186,9 +186,9 @@ class MdPesqAtualizadorSeiRN extends InfraRN
         $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
         $objInfraMetaBD->setBolValidarIdentificador(true);
 
-        $arrTabelas = array('md_pesq_parametro');
+        $this->logar('ALTERANDO A TABELA - alterando md_pesq_parametro.valor para NULL');
+        $objInfraMetaBD->alterarColuna('md_pesq_parametro', 'valor', $objInfraMetaBD->tipoTextoGrande(), 'NULL');
 
-        $this->fixIndices($objInfraMetaBD, $arrTabelas);
 
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'4.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
