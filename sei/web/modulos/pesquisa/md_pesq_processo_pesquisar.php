@@ -258,7 +258,7 @@ try {
     $strLinkAjaxContatos = SessaoSEIExterna::getInstance()->assinarLink('md_pesq_controlador_ajax_externo.php?acao_ajax_externo=contato_auto_completar_contexto_pesquisa&id_orgao_acesso_externo=0');
     $strLinkAjaxUnidade = SessaoSEIExterna::getInstance()->assinarLink('md_pesq_controlador_ajax_externo.php?acao_ajax_externo=unidade_auto_completar_todas&id_orgao_acesso_externo=0');
 
-    $strLinkAjuda = PaginaSEIExterna::getInstance()->formatarXHTML(SessaoSEIExterna::getInstance()->assinarLink('md_pesq_ajuda_exibir_externo.php?acao_externa=pesquisa_solr_ajuda_externa&id_orgao_acesso_externo=0'));
+    $strLinkAjuda = PaginaSEIExterna::getInstance()->formatarXHTML(SessaoSEIExterna::getInstance()->assinarLink('md_pesq_ajuda_exibir_externo.php?acao_externa=pesquisa_publica_ajuda&id_orgao_acesso_externo=0'));
 
     if ($strStaData == '0') {
         $strDisplayPeriodoExplicito = $strDisplayAvancado;
@@ -354,7 +354,7 @@ PaginaSEIExterna::getInstance()->abrirJavaScript();
 
     function inicializar(){
 
-    $('#divInfraBarraSistemaPadraoE').html('<div class="align-self-center"><span id="spnInfraIdentificacaoSistema">Sistema Eletrônico de Informações</span></div>');
+    
 
     infraOcultarMenuSistemaEsquema();
 
