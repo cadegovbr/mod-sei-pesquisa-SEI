@@ -100,7 +100,7 @@ class  MdPesqBuscaProtocoloExterno
         if ($bolPesquisaDocumentoProcessoPublico) {
 
             if (in_array("R", $checkbox)) {
-                array_push($grupo, "(sta_prot:R AND tipo_aces:P)");
+                array_push($grupo, "(sta_prot:R)");
             }
 
             // PESQUISAR EM: DOCUMENTOS GERADOS

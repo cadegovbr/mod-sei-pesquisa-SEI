@@ -134,8 +134,8 @@ try {
 	$bolFlag = false;
 	foreach($objProcedimentoDTO->getArrObjDocumentoDTO() as $dto){
 		if ($dto->getDblIdDocumento() == $objDocumentoDTO->getDblIdDocumento()){
-		  if (SessaoSEIExterna::getInstance()->getNumIdUsuarioExterno()==null){
-  		  	if (!$objDocumentoRN->verificarSelecaoAcessoExterno($dto)){
+		  if (SessaoSEIExterna::getInstance()->getNumIdUsuarioExterno()==null || SessaoSEIExterna::getInstance()->getNumIdUsuarioExterno()==""){
+  		  	if (!$objDocumentoRN->verificarSelecaoAcessoBasico($dto)){
           		if ($dto->getStrStaProtocoloProtocolo()==ProtocoloRN::$TP_DOCUMENTO_GERADO && $dto->getStrSinAssinado()=='N'){
             		die('Documento '.$objDocumentoDTO->getStrProtocoloDocumentoFormatado().' ainda não foi assinado.');
           		}else{

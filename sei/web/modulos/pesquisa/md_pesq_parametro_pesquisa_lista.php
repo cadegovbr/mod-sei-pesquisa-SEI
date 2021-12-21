@@ -25,12 +25,12 @@ try {
 
 
         case 'md_pesq_parametro_listar':
-            $strTitulo = 'Parâmetros Pesquisa Pública';
+            $strTitulo = 'Parâmetros de Pesquisa Pública';
             break;
 
         case 'md_pesq_parametro_alterar':
 
-            $strTitulo = 'Parâmetros Pesquisa Pública';
+            $strTitulo = 'Parâmetros de Pesquisa Pública';
             if (isset($_POST['btnSalvar'])) {
                 $arrParametroPesquisaDTO = array(
                     array('Nome' => MdPesqParametroPesquisaRN::$TA_CAPTCHA, 'Valor' => $_POST['chkCapcthaPesquisa']),
