@@ -90,7 +90,7 @@ class  MdPesqBuscaProtocoloExterno
             if ($bolPesquisaProcessoRestrito) {
                 array_push($grupo, "(sta_prot:P)");
             } else {
-                array_push($grupo, "(sta_prot:P)");
+                array_push($grupo, "(sta_prot:P AND tipo_aces_g:P)");
             }
 
         }
@@ -100,14 +100,13 @@ class  MdPesqBuscaProtocoloExterno
         if ($bolPesquisaDocumentoProcessoPublico) {
 
             if (in_array("R", $checkbox)) {
-                array_push($grupo, "(sta_prot:R)");
+                array_push($grupo, "(sta_prot:R AND tipo_aces_g:P)");
             }
 
             // PESQUISAR EM: DOCUMENTOS GERADOS
             $filtroDocumentoInternoAssinado = '';
             if (in_array("G", $checkbox)) {
-                array_push($grupo, "(sta_prot:G)");
-//                array_push($grupo, "(sta_prot:G AND tipo_aces:P)");
+                array_push($grupo, "(sta_prot:G AND tipo_aces_g:P)");
             }
         }
 
