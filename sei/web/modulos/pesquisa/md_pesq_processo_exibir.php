@@ -138,7 +138,7 @@ try {
     	if($objHipoteseLegalDTO != null){
     		
     		$strHipoteseLegal .= '<img src="/infra_css/imagens/espaco.gif">';
-    		$strHipoteseLegal .= '<img src="imagens/sei_chave_restrito.gif" align="absbottom"  title="Acesso Restrito.&#13'.PaginaSEIExterna::getInstance()->formatarXHTML($objHipoteseLegalDTO->getStrNome().' ('.$objHipoteseLegalDTO->getStrBaseLegal().')').'">';
+    		$strHipoteseLegal .= '<img src="imagens/sei_chave_restrito.svg" align="absbottom"  title="Acesso Restrito.&#13'.PaginaSEIExterna::getInstance()->formatarXHTML($objHipoteseLegalDTO->getStrNome().' ('.$objHipoteseLegalDTO->getStrBaseLegal().')').'">';
    
     	}		
 		
@@ -386,7 +386,7 @@ try {
    					
    					$strResultado .= '<td align="center" ><span class="retiraAncoraPadraoAzul">'.$objDocumentoDTO->getStrProtocoloDocumentoFormatado().'</span>';
    					$strResultado .= '<img src="/infra_css/imagens/espaco.gif">';
-   					$strResultado .= '<img src="imagens/sei_chave_restrito.gif" align="absbottom"  title="Acesso Restrito.&#13'.PaginaSEIExterna::getInstance()->formatarXHTML($strHipoteseLegalDocumento).'">';
+   					$strResultado .= '<img src="imagens/sei_chave_restrito.svg" align="absbottom"  title="Acesso Restrito.&#13'.PaginaSEIExterna::getInstance()->formatarXHTML($strHipoteseLegalDocumento).'">';
    					$strResultado .= '</td>';
    					
    				}else{
@@ -441,7 +441,7 @@ try {
    						$strHipoteseLegalAnexo .= $objHipoteseLegaDocumentoDTO->getStrNome().' ('.$objHipoteseLegaDocumentoDTO->getStrBaseLegal().')';
    					}
    				}
-   				$strProtocoloRestrito .= '<img src="imagens/sei_chave_restrito.gif" align="absbottom"  title="Acesso Restrito.&#13'.$strHipoteseLegalAnexo.'">';
+   				$strProtocoloRestrito .= '<img src="imagens/sei_chave_restrito.svg" align="absbottom"  title="Acesso Restrito.&#13'.$strHipoteseLegalAnexo.'">';
    			}
    			
    			if($objProcedimentoDTOAnexado->getStrStaNivelAcessoLocalProtocolo() == ProtocoloRN::$NA_PUBLICO && $objProcedimentoDTO->getStrStaNivelAcessoLocalProtocolo() == ProtocoloRN::$NA_PUBLICO ){
@@ -718,7 +718,7 @@ table caption {
 }
 <? } ?>
 
-span.retiraAncoraPadraoAzul{font-size: 1.2em;}
+span.retiraAncoraPadraoAzul{font-size: .875rem;}
 
 <?
 PaginaSEIExterna::getInstance()->fecharStyle();
