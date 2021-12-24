@@ -29,6 +29,7 @@ class MdPesqAtualizadorSeiRN extends InfraRN
     {
         session_start();
         SessaoSEI::getInstance(false);
+		
         ini_set('max_execution_time', '0');
         ini_set('memory_limit', '-1');
         @ini_set('implicit_flush', '1');
@@ -172,9 +173,9 @@ class MdPesqAtualizadorSeiRN extends InfraRN
 
             $objParametroPesquisaRN->cadastrar($objParametroPesquisaDTO);
         }
-
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
-        BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'3.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
+		
+		$this->logar('ADICIONANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+        BancoSEI::getInstance()->executarSql('INSERT INTO infra_parametro (valor, nome) VALUES( \'3.0.0\',  \'' . $this->nomeParametroModulo . '\' )');
 
         $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
 
