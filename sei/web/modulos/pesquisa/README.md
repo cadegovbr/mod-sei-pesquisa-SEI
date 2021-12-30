@@ -26,7 +26,7 @@
 
 6. Rodar o script de banco "/sei/scripts/sei_atualizar_versao_modulo_pesquisa.php" em linha de comando no servidor do SEI, verificando se não houve erro em sua execução, em que ao final do log deverá ser informado "FIM". Exemplo de comando de execução:
 
-   	/usr/bin/php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_pesquisa.php 2>&1 > atualizacao_pesquisa_sei.log 
+   	/usr/bin/php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_pesquisa.php 2>&1 > atualizacao_pesquisa_sei.log
 
 7. **IMPORTANTE**: Na execução dos dois scripts de banco acima, ao final deve constar o termo "FIM", o "TEMPO TOTAL DE EXECUÇÃO" e a informação de que a instalação/atualização foi realizada com sucesso na base de dados correspondente (SEM ERROS). Do contrário, o script não foi executado até o final e algum dado não foi inserido/atualizado no respectivo banco de dados, devendo recuperar o backup do banco e repetir o procedimento.
 	- Constando ao final da execução do script as informações indicadas, pode logar no SEI e SIP e verificar no menu **Infra > Parâmetros** dos dois sistemas se consta o parâmetro "VERSAO_MODULO_PESQUISA_PUBLICA" com o valor da última versão do módulo.
