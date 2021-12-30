@@ -1,36 +1,33 @@
 <?
 /*
-* CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA - CADE
-*
-* 01/10/2014 - criado por alex braga
-*
-*
-* Versão do Gerador de Código:
-*/
+ * CONSELHO ADMINISTRATIVO DE DEFESA ECONÔMICA - CADE
+ * 01/10/2014
+ *
+ */
+
 try {
-  require_once dirname(__FILE__).'/../../SEI.php';
-  
-  //////////////////////////////////////////////////////////////////////////////
-  InfraDebug::getInstance()->setBolLigado(false);
-  InfraDebug::getInstance()->setBolDebugInfra(false);
-  InfraDebug::getInstance()->limpar();
-  //////////////////////////////////////////////////////////////////////////////
-
-  MdPesqPesquisaUtil ::valiadarLink();
-
-  $strNomeArquivo = '';
-  
-  switch($_GET['acao_externa']){ 
-  	  	
-    case 'pesquisa_publica_ajuda':
-      break;
 	
-    default:
-      throw new InfraException("Ação '".$_GET['acao']."' não reconhecida.");
-  }       
+	require_once dirname(__FILE__).'/../../SEI.php';
 
-}catch(Exception $e){
-  die('Erro realizando download do anexo:'.$e->__toString());
+	InfraDebug::getInstance()->setBolLigado(false);
+	InfraDebug::getInstance()->setBolDebugInfra(false);
+	InfraDebug::getInstance()->limpar();
+
+	MdPesqPesquisaUtil ::valiadarLink();
+
+	$strNomeArquivo = '';
+
+	switch($_GET['acao_externa']){
+	
+	case 'pesquisa_publica_ajuda':
+	  break;
+
+	default:
+	  throw new InfraException("Ação '".$_GET['acao']."' não reconhecida.");
+	}
+
+	}catch(Exception $e){
+	die('Erro realizando download do anexo:'.$e->__toString());
 }
 
 PaginaSEI::getInstance()->montarDocType();
