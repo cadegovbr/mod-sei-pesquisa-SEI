@@ -186,13 +186,6 @@ class MdPesqAtualizadorSeiRN extends InfraRN
 
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
-        $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
-        $objInfraMetaBD->setBolValidarIdentificador(true);
-
-        $this->logar('ALTERANDO A TABELA - alterando md_pesq_parametro.valor para NULL');
-        $objInfraMetaBD->alterarColuna('md_pesq_parametro', 'valor', $objInfraMetaBD->tipoTextoGrande(), 'NULL');
-
-
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'4.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
