@@ -10,7 +10,7 @@
 
 try {
     require_once dirname(__FILE__) . '/../../SEI.php';
-    require_once dirname(__FILE__) . '/MdPesqBuscaProtocoloExterno.php';
+	require_once("MdPesqBuscaProtocoloExterno.php");
     require_once("MdPesqConverteURI.php");
 
     SessaoSEIExterna::getInstance()->validarSessao();
