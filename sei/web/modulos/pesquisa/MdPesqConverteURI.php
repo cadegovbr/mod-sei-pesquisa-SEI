@@ -7,7 +7,7 @@
  *
  */
 
-require_once ("MdPesqCriptografia.php");
+require_once("MdPesqCriptografia.php");
 	class MdPesqConverteURI{
 		
 		public static function converterURI()
