@@ -105,14 +105,14 @@ class MdPesqAtualizadorSipRN extends InfraRN
             if (count($objInfraMetaBD->obterTabelas('sip_teste')) == 0) {
                 BancoSip::getInstance()->executarSql('CREATE TABLE sip_teste (id ' . $objInfraMetaBD->tipoNumero() . ' null)');
             }
-            BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
+            
+			BancoSip::getInstance()->executarSql('DROP TABLE sip_teste');
 
             $objInfraParametro = new InfraParametro(BancoSip::getInstance());
 
-            $strVersaoModuloPeticionamento = $objInfraParametro->getValor($this->nomeParametroModulo, false);
+            $strVersaoModuloPesquisa = $objInfraParametro->getValor($this->nomeParametroModulo, false);
 
-            switch ($strVersaoModuloPeticionamento) {
-                //case '' - Nenhuma versão instalada
+            switch ($strVersaoModuloPesquisa) {
                 case '':
                     $this->instalarv300();
                 case '3.0.0':
@@ -130,10 +130,10 @@ class MdPesqAtualizadorSipRN extends InfraRN
             $this->finalizar('FIM');
             InfraDebug::getInstance()->setBolDebugInfra(true);
         } catch (Exception $e) {
-            InfraDebug::getInstance()->setBolLigado(false);
-            InfraDebug::getInstance()->setBolDebugInfra(false);
-            InfraDebug::getInstance()->setBolEcho(false);
-            throw new InfraException('Erro atualizando versão.', $e);
+            InfraDebug::getInstance()->setBolLigado(true);
+            InfraDebug::getInstance()->setBolDebugInfra(true);
+            InfraDebug::getInstance()->setBolEcho(true);
+            throw new InfraException('Erro instalando/atualizando versão.', $e);
         }
     }
 

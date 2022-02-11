@@ -105,9 +105,9 @@ class MdPesqAtualizadorSeiRN extends InfraRN
 
             $objInfraParametro = new InfraParametro(BancoSEI::getInstance());
 
-            $strVersaoModuloPeticionamento = $objInfraParametro->getValor($this->nomeParametroModulo, false);
+            $strVersaoModuloPesquisa = $objInfraParametro->getValor($this->nomeParametroModulo, false);
 
-            switch ($strVersaoModuloPeticionamento) {
+            switch ($strVersaoModuloPesquisa) {
                 case '':
                     $this->instalarv300();
                 case '3.0.0':
