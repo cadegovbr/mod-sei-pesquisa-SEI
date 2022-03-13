@@ -567,9 +567,10 @@ PaginaSEIExterna::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'
 
         if ($strResultado != '') {
             echo '<div class="row">';
-            echo '<div class="col-sm-12 col-md-12 col-lg-12 col-xl-8">';
+            echo '<div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">';
             echo '<div id="conteudo" style="width:99%;" class="infraAreaTabela">';
             echo $strResultado;
+            echo '</div>';
             echo '</div>';
             echo '</div>';
         }

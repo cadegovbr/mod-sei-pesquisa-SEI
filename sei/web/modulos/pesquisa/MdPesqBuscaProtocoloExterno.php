@@ -167,6 +167,7 @@ class MdPesqBuscaProtocoloExterno{
 
 		    $numRegistros = sizeof($registros);
 
+			$html .= "<table border=\"0\" class=\"pesquisaResultado\">\n";
 		    for ($i = 0; $i < $numRegistros; $i++) {
 
 				$dados = array();
@@ -208,11 +209,11 @@ class MdPesqBuscaProtocoloExterno{
 				}
 
 				$arrMetatags['Unidade'] = '<a alt="' . $strDescricaoUnidadeGeradora . '" title="' . $strDescricaoUnidadeGeradora . '" class="ancoraSigla">' . $strSiglaUnidadeGeradora . '</a>';
-
+				$arrMetatags[''] = '&nbsp;';
 				$dtaGeracao = InfraSolrUtil::obterTag($regResultado, 'dta_ger', 'date');
 				$dtaGeracao = preg_replace("/(\d{4})-(\d{2})-(\d{2})(.*)/", "$3/$2/$1", $dtaGeracao);
 
-				$arrMetatags['Data'] = $dtaGeracao;
+				$arrMetatags['Inclusão'] = $dtaGeracao;
 
 				// SNIPPET
 				$numId = $registros[$i]->xpath("str[@name='id']");
@@ -255,6 +256,16 @@ class MdPesqBuscaProtocoloExterno{
 
 						$dados["identificacao_protocolo"] = $objDocumentoDTO->getStrNomeSerie() . ' ' . $objDocumentoDTO->getStrNumero();
 
+						// Esconde highlight se intimação do documento ou anexos não estiver cumprida:
+						if( PesquisaIntegracao::verificaSeModPeticionamentoVersaoMinima() ){
+
+							$objMdPetIntCertidaoRN =  new MdPetIntCertidaoRN();
+							if( !$objMdPetIntCertidaoRN->verificaDocumentoEAnexoIntimacaoNaoCumprida( array($objDocumentoDTO->getDblIdDocumento(),false,false,true) ) ){
+								$snippet = '&nbsp;';
+							}
+
+						}
+
 						// INCLUIDO 21/12/2015 Substitui data de geração para data de assinatura de documentos gerados
 						if ($objProtocoloDTO->getStrStaProtocolo() == ProtocoloRN::$TP_DOCUMENTO_GERADO) {
 
@@ -273,7 +284,7 @@ class MdPesqBuscaProtocoloExterno{
 
 								    $dtaGeracao = substr($objAssinaturaDTO->getDthAberturaAtividade(), 0, 10);
 
-								    $arrMetatags['Data'] = $dtaGeracao;
+								    $arrMetatags['Inclusão'] = $dtaGeracao;
 
 								}
 						    }
@@ -297,7 +308,7 @@ class MdPesqBuscaProtocoloExterno{
 
 								$dtaGeracao = substr($objAtributoAndamentoDTO->getDthAberturaAtividade(), 0, 10);
 
-								$arrMetatags['Data'] = $dtaGeracao;
+								$arrMetatags['Inclusão'] = $dtaGeracao;
 						    }
 						}
 
@@ -310,12 +321,9 @@ class MdPesqBuscaProtocoloExterno{
 				$urlPesquisaProcesso = 'md_pesq_processo_exibir.php?' . $parametrosCriptografadosProcesso;
 				$arvore = $urlPesquisaProcesso;
 
-
-				$tituloLinkNumeroProcesso = "<a href=\"" . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink(MdPesqSolrUtilExterno::prepararUrl($arvore))) . "\" title=\"Acessar\" target=\"_blank\" class=\"protocoloNormal\">";
-				$tituloLinkNumeroProcesso .= $dados["protocolo_processo_formatado"];
+				$tituloLinkNumeroProcesso = "<a href=\"" . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink(MdPesqSolrUtilExterno::prepararUrl($arvore))) . "\" title=\"Acessar\" target=\"_blank\" class=\"protocoloNormal processoVisitado\" onClick=\"infraLimparFormatarTrAcessada(this.parentNode.parentNode);\">";
+				$tituloLinkNumeroProcesso .= ''.$dados["protocolo_processo_formatado"];
 				$tituloLinkNumeroProcesso .= "</a>";
-
-				$tituloProtocolo = $tituloLinkNumeroProcesso;
 
 				//Tipo do Processo
 				$strNomeTipoProcedimento = "";
@@ -334,6 +342,7 @@ class MdPesqBuscaProtocoloExterno{
 				}
 
 				$titulo = $strNomeTipoProcedimento . " n&deg;" . $tituloLinkNumeroProcesso;
+				$strProtocoloDocumento = "";
 
 				if (empty($dados["protocolo_documento_formatado"]) == false) {
 				    if ($objDocumentoDTO == null) {
@@ -346,12 +355,16 @@ class MdPesqBuscaProtocoloExterno{
 				    $titulo .= " ";
 				    $parametrosCriptografadosDocumentos = MdPesqCriptografia::criptografa('acao_externa=md_pesq_documento_exibir&id_orgao_acesso_externo=0&id_documento=' . $objDocumentoDTO->getDblIdDocumento());
 				    $endereco = 'md_pesq_documento_consulta_externa.php?' . $parametrosCriptografadosDocumentos;
-				    $titulo .= "(<a title=\"Acessar\" target=\"_blank\" href=\"" . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink($endereco)) . "\"";
-				    $titulo .= " class=\"protocoloNormal\"";
-				    $titulo .= ">" . trim($dados["identificacao_protocolo"]) ."</a>)";
+				    
+					$titulo .= "(<a title=\"Acessar\" target=\"_blank\" href=\"" . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink($endereco)) . "\" onClick=\"infraLimparFormatarTrAcessada(this.parentNode.parentNode);\"";
+				    $titulo .= " class=\"protocoloNormal\" >" . trim($dados["identificacao_protocolo"]) ."</a>)";
+
+					$strProtocoloDocumento .= "<a title=\"Acessar\" target=\"_blank\" href=\"" . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink($endereco)) . "\" class=\"protocoloNormal processoVisitado\" onClick=\"infraLimparFormatarTrAcessada(this.parentNode.parentNode);\">";
+				    $strProtocoloDocumento .= $dados["protocolo_documento_formatado"];
+				    $strProtocoloDocumento .= "</a>";
 				}
 
-				$tituloCompleto = "<a href=\"" . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink(MdPesqSolrUtilExterno::prepararUrl($arvore))) . "\" title=\"Acessar\" target=\"_blank\" class=\"arvore\">";
+				$tituloCompleto = "<a href=\"" . PaginaSEI::getInstance()->formatarXHTML(SessaoSEI::getInstance()->assinarLink(MdPesqSolrUtilExterno::prepararUrl($arvore))) . "\" title=\"Acessar\" target=\"_blank\" class=\"arvore\"  onClick=\"infraLimparFormatarTrAcessada(this.parentNode.parentNode);\">";
 				$tituloCompleto .= "<img border=\"0\" src=\"imagens/arvore.svg\" alt=\"Acessar\" title=\"Acessar\" class=\"arvore\" />";
 				$tituloCompleto .= "</a>";
 
@@ -360,14 +373,13 @@ class MdPesqBuscaProtocoloExterno{
 				// REMOVE TAGS DO TÍTULO
 				$tituloCompleto = preg_replace("/&lt;.*?&gt;/", "", $tituloCompleto);
 
-
 				if ($objProtocoloDTO) {
 				    if ($objProtocoloDTO->getStrStaNivelAcessoGlobal() != ProtocoloRN::$NA_PUBLICO && $bolPesquisaProcessoRestrito) {
 
 						if (!$bolLinkMetadadosProcessoRestrito || $objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO) {
 						    $tituloCompleto = $objProtocoloDTO->getStrProtocoloFormatado();
 						    $titulo = $objProtocoloDTO->getStrProtocoloFormatado();
-						    $tituloProtocolo = $objProtocoloDTO->getStrProtocoloFormatado();
+							$strProtocoloDocumento = "";
 						    //$tituloProtocolo = 'N° SEI (Documento/Processo)';
 
 						    $objHipoteseLegalDTO = new HipoteseLegalDTO();
@@ -395,7 +407,7 @@ class MdPesqBuscaProtocoloExterno{
 
 						    unset($arrMetatags['Usuário']);
 						    unset($arrMetatags['Unidade']);
-						    unset($arrMetatags['Data']);
+						    unset($arrMetatags['Inclusão']);
 						}
 				    }
 				}
@@ -406,10 +418,10 @@ class MdPesqBuscaProtocoloExterno{
 
 						$tituloCompleto = 'ACESSO RESTRITO';
 						$titulo = 'ACESSO RESTRITO';
-						$tituloProtocolo = 'ACESSO RESTRITO';
+						$strProtocoloDocumento = "";
 						unset($arrMetatags['Usuário']);
 						unset($arrMetatags['Unidade']);
-						unset($arrMetatags['Data']);
+						unset($arrMetatags['Inclusão']);
 						$snippet = 'ACESSO RESTRITO';
 				    }
 				}
@@ -418,54 +430,49 @@ class MdPesqBuscaProtocoloExterno{
 				    if ($objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO && $objProtocoloDTO->getStrStaNivelAcessoGlobal() != ProtocoloRN::$NA_PUBLICO) {
 						$tituloCompleto = 'ACESSO RESTRITO';
 						$titulo = 'ACESSO RESTRITO';
-						$tituloProtocolo = 'ACESSO RESTRITO';
+						$strProtocoloDocumento = "";
 						unset($arrMetatags['Usuário']);
 						unset($arrMetatags['Unidade']);
-						unset($arrMetatags['Data']);
+						unset($arrMetatags['Inclusão']);
 						$snippet = 'ACESSO RESTRITO';
 				    }
 				}
 
 				if ($objProtocoloDTO) {
-				    $html .= "<table border=\"0\" class=\"pesquisaResultado\">\n";
+
 				    $html .= "<tr class=\"pesquisaTituloRegistro\">\n";
-				    $html .= "<td class=\"pesquisaTituloEsquerda\">";
+				    $html .= "<td colspan=\"2\" class=\"pesquisaTituloEsquerda\">";
 				    $html .= $tituloCompleto;
 				    $html .= "</td>\n";
 				    $html .= "<td class=\"pesquisaTituloDireita\">";
-				    $html .= $tituloProtocolo;
+				    $html .= $strProtocoloDocumento;
 				    $html .= "</td>\n";
 				    $html .= "</tr>\n";
 
-				    if (empty($snippet) == false)
-						$html .= "<tr>\n
-											<td width=\"99%\" colspan=\"2\" class=\"resSnippet\">
-												" . $snippet . "
-											</td>\n
-											</tr>\n";
+				    if (empty($snippet) == false){
+						$html .= "<tr>\n";
+						$html .= "<td width=\"99%\" colspan=\"3\" class=\"resSnippet\">\n";
+						$html .= $snippet;
+						$html .= "</td>\n";
+						$html .= "</tr>\n";
+					}
 
 				    if (count($arrMetatags)) {
 						$html .= "<tr>\n";
-						$html .= "<td colspan=\"2\" class=\"pesquisaMetatag\">\n";
-						$html .= "<tr>\n";
-
 						foreach ($arrMetatags as $nomeMetaTag => $valorMetaTag) {
-						    $html .= "<td class=\"pesquisaMetatag\">";
-						    $html .= "<b>" . $nomeMetaTag . ":</b> " . $valorMetaTag;
-						    $html .= "</td>\n";
+							if($nomeMetaTag != 'Usuário' && $valorMetaTag != '&nbsp;'){
+								$html .= "<td class=\"pesquisaMetatag\" width=\"33%\"><b>" . $nomeMetaTag . ":</b> " . $valorMetaTag . "</td>\n";
+							}else{
+								$html .= "<td class=\"pesquisaMetatag\" width=\"33%\">&nbsp;</td>\n";
+							}
 						}
-
-						$html .= "</tr>\n";
-						$html .= "</tbody>\n";
-						$html .= "</table>\n";
-						$html .= "</td>\n";
 						$html .= "</tr>\n";
 				    }
 
-				    $html .= "</table>\n";
 				}
+				
 		    }
-
+			$html .= "</tbody></table>\n";
 		    $html .= MdPesqSolrUtilExterno::criarBarraNavegacao($itens, $inicio, 10, PaginaSEIExterna::getInstance(), SessaoSEIExterna::getInstance(), $md5Captcha);
 		}
 

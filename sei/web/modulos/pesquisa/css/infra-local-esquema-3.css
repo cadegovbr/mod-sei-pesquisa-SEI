@@ -276,6 +276,8 @@ div.pesquisaBarraD {
   text-align: right;
   vertical-align: bottom;
   padding-bottom: .3em;
+  font-size: .875rem;
+  border-bottom: 0.1em solid #909090;
 }
 
 div.pesquisaPaginas {
@@ -334,7 +336,7 @@ table.pesquisaResultado {
 }
 
 table.pesquisaResultado td {
-  padding: .1em .1em;
+  padding: 0.3em 0.5em;
 }
 
 table.pesquisaResultado a.protocoloAberto,
@@ -375,6 +377,7 @@ td.pesquisaTituloDireita {
 div#conteudo td.pesquisaMetatag {
   color: #333333;
   text-align: center;
+  padding-bottom: 2em;
 }
 
 table.pesquisaResultado td.pesquisaMetatag > b {

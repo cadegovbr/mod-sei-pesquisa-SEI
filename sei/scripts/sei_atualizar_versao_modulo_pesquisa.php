@@ -25,7 +25,7 @@ class MdPesqAtualizadorSeiRN extends InfraRN
         return BancoSEI::getInstance();
     }
 
-    private function inicializar($strTitulo)
+    protected function inicializar($strTitulo)
     {
         session_start();
         SessaoSEI::getInstance(false);
@@ -45,13 +45,13 @@ class MdPesqAtualizadorSeiRN extends InfraRN
         $this->logar($strTitulo);
     }
 
-    private function logar($strMsg)
+    protected function logar($strMsg)
     {
         InfraDebug::getInstance()->gravar($strMsg);
         flush();
     }
 
-    private function finalizar($strMsg = null, $bolErro = false)
+    protected function finalizar($strMsg = null, $bolErro = false)
     {
         if (!$bolErro) {
             $this->numSeg = InfraUtil::verificarTempoProcessamento($this->numSeg);
@@ -85,7 +85,7 @@ class MdPesqAtualizadorSeiRN extends InfraRN
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.595.1';
+            $numVersaoInfraRequerida = '1.600.0';
             $versaoInfraFormatada = (int)str_replace('.', '', VERSAO_INFRA);
             $versaoInfraReqFormatada = (int)str_replace('.', '', $numVersaoInfraRequerida);
 
@@ -132,7 +132,7 @@ class MdPesqAtualizadorSeiRN extends InfraRN
         }
     }
 
-    private function instalarv300()
+    protected function instalarv300()
     {
         $objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
 
@@ -181,20 +181,26 @@ class MdPesqAtualizadorSeiRN extends InfraRN
 
     }
 
-    private function instalarv400()
+    protected function instalarv400()
     {
 
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
 
-        $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
+		$objInfraMetaBD = new InfraMetaBD(BancoSEI::getInstance());
+        $objInfraMetaBD->setBolValidarIdentificador(true);
+
+        $arrTabelas = array('md_pesq_parametro');
+
+        $this->fixIndices($objInfraMetaBD, $arrTabelas);
+		
+		$this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'4.0.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');
 
         $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
 
     }
 
-
-    private function instalarv401()
+    protected function instalarv401()
     {
 
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 4.0.1 DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
@@ -205,17 +211,19 @@ class MdPesqAtualizadorSeiRN extends InfraRN
         $this->logar('INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' REALIZADA COM SUCESSO NA BASE DO SEI');
 
     }
-
-
-    protected function fixIndices(InfraMetaBD $objInfraMetaBD, $arrTabelas)
+	
+	protected function fixIndices(InfraMetaBD $objInfraMetaBD, $arrTabelas, $debug = false)
     {
-        InfraDebug::getInstance()->setBolDebugInfra(true);
-
+        if (!$debug) {
+            InfraDebug::getInstance()->setBolDebugInfra(true);
+        }
         $this->logar('ATUALIZANDO INDICES...');
 
         $objInfraMetaBD->processarIndicesChavesEstrangeiras($arrTabelas);
 
-        InfraDebug::getInstance()->setBolDebugInfra(false);
+        if (!$debug) {
+            InfraDebug::getInstance()->setBolDebugInfra(false);
+        }
     }
 
 }

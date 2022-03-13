@@ -88,8 +88,7 @@ try {
 	}
 
 	//Protege acesso a documento publico de intimacao eletronica
-	$objInfraParametroDTO = $objParametroPesquisaRN->consultarVersaoPeticionamento('2.0.0');
-	if( !is_null($objInfraParametroDTO) ){
+	if( PesquisaIntegracao::verificaSeModPeticionamentoVersaoMinima() ){
 		$objMdPetIntCertidaoRN = new MdPetIntCertidaoRN();
 		if( !$objMdPetIntCertidaoRN->verificaDocumentoEAnexoIntimacaoNaoCumprida( array($objDocumentoDTO->getDblIdDocumento(),false,false,true)) ){
 			die("Documento com acesso restrito provisoriamente em razão de Intimação Eletrônica ainda não cumprida");

@@ -90,7 +90,7 @@ class MdPesqAtualizadorSipRN extends InfraRN
             }
 
             //testando versao do framework
-            $numVersaoInfraRequerida = '1.595.1';
+            $numVersaoInfraRequerida = '1.600.0';
             $versaoInfraFormatada = (int)str_replace('.', '', VERSAO_INFRA);
             $versaoInfraReqFormatada = (int)str_replace('.', '', $numVersaoInfraRequerida);
 
@@ -137,7 +137,7 @@ class MdPesqAtualizadorSipRN extends InfraRN
         }
     }
 
-    private function instalarV300()
+    protected function instalarv300()
     {
 
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO ' . $this->versaoAtualDesteModulo . ' DO ' . $this->nomeDesteModulo . ' NA BASE DO SIP');

@@ -291,7 +291,7 @@ try {
 			//Protege acesso à documento público de intimação eletrônica
 			$bolValidaIntimacaoEletronica = true;
 
-			$objInfraParametroDTO = $objParametroPesquisaRN->consultarVersaoPeticionamento('2.0.0');
+			$objInfraParametroDTO = $objParametroPesquisaRN->consultarVersaoPeticionamento('4.0.2');
 			if( !is_null($objInfraParametroDTO) ){
 				$objMdPetIntCertidaoRN =  new MdPetIntCertidaoRN();
 				if( !$objMdPetIntCertidaoRN->verificaDocumentoEAnexoIntimacaoNaoCumprida( array($objDocumentoDTO->getDblIdDocumento(),false,false,true) ) ){
@@ -556,8 +556,7 @@ try {
   					}
 
 					//Protege acesso à documento público de intimação eletrônica
-					$objInfraParametroDTO = $objParametroPesquisaRN->consultarVersaoPeticionamento('2.0.0');
-					if( !is_null($objInfraParametroDTO) ){
+					if( PesquisaIntegracao::verificaSeModPeticionamentoVersaoMinima() ){
 						$objMdPetIntCertidaoRN =  new MdPetIntCertidaoRN();
 						if( !$objMdPetIntCertidaoRN->verificaDocumentoEAnexoIntimacaoNaoCumprida( array($objDocumentoDTO->getDblIdDocumento(),false,false,true) ) ){
 							$idx_documento = array_search($objDocumentoDTO->getDblIdDocumento(), $arrSelecionados);

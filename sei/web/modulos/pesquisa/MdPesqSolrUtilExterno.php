@@ -117,7 +117,7 @@ class MdPesqSolrUtilExterno
         if ($totalRes == 0)
             return;
 
-        $nav = "<div class=\"pesquisaPaginas\">";
+        $nav = "<div class=\"pesquisaPaginas d-flex flex-column flex-md-row text-align-center\">";
 
         $paginaAtual = $inicio / $numResPorPag + 1;
 
@@ -125,11 +125,16 @@ class MdPesqSolrUtilExterno
 
         $hash = (!is_null($md5Captcha)) ? "&hash=" . $md5Captcha : "";
 
+        $nav .= '<div class="col-12 col-md-4 mx-0 px-0 text-center text-md-right">';
         if ($inicio != null) {
             $nav .= "<span class=\"pequeno\"><a href=\"javascript:pagina.ir('" . $objPagina->formatarXHTML($objSessao->assinarLink($urlSemInicio . "&inicio=" . ($inicio - $numResPorPag) . $hash)) . "')\">Anterior</a></span>\n";
         }
+        $nav .= '</div>'."\n";
 
         if ($totalRes > $numResPorPag) {
+
+            $nav .= '<div class="col-12 col-md-4 mx-0 px-0 text-center">'."\n";
+
             $numPagParaClicar = 12;
 
             if (ceil($totalRes / $numResPorPag) > $numPagParaClicar) {
@@ -152,18 +157,21 @@ class MdPesqSolrUtilExterno
 
             for ($i = $iniNav; $i < $fimNav; $i++) {
                 if ($inicio == 0 and $i == 0) {
-                    $nav .= " <b>" . ($i + 1) . "</b> ";
+                    $nav .= " <div class=\"pesquisaPaginaSelecionada\">" . ($i + 1) . "</div> ";
                 } elseif (($i + 1) == ($inicio / $numResPorPag + 1)) {
-                    $nav .= " <b>" . ($i + 1) . "</b> ";
+                    $nav .= " <div class=\"pesquisaPaginaSelecionada\">" . ($i + 1) . "</div> ";
                 } else {
                     $nav .= " <a href=\"javascript:pagina.ir('" . str_replace('+', '%2B', $objPagina->formatarXHTML($objSessao->assinarLink($urlSemInicio . "&inicio=" . ($i * $numResPorPag)))) . $hash . "')\">" . ($i + 1) . "</a>\n";
                 }
             }
+            $nav .= '</div>'."\n";
         }
 
+        $nav .= '<div class="col-12 col-md-4 mx-0 px-0 text-center text-md-left">';
         if (($inicio / $numResPorPag) + 1 != ceil($totalRes / $numResPorPag)) {
             $nav .= "<span class=\"pequeno\"><a href=\"javascript:pagina.ir('" . $objPagina->formatarXHTML($objSessao->assinarLink($urlSemInicio . "&inicio=" . ($inicio + $numResPorPag))) . $hash . "')\">Próxima</a></span>\n";
         }
+        $nav .= '</div>'."\n";
 
         $nav .= "</div>";
 

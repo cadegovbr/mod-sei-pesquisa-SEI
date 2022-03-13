@@ -3,12 +3,18 @@
 		
 		public function getNome()
 		{
-			return 'Módulo de Pesquisa Pública';
+			return 'Pesquisa Pública';
 		}
 		
 		public function getVersao()
 		{
 			return '4.0.1';
+		}
+		
+		
+		public function getPeticionamentoMenorVersaoRequerida()
+		{
+			return '4.0.2';
 		}
 		
 		public function getInstituicao()
@@ -74,5 +80,31 @@
 			}
 			return null;
 		}
+		
+		public static function verificaSeModPeticionamentoVersaoMinima()
+		{
+			
+			$bolVersaoValida = false;
+			
+			$arrModulos = ConfiguracaoSEI::getInstance()->getValor('SEI','Modulos');
+
+			if(is_array($arrModulos) && array_key_exists('PeticionamentoIntegracao', $arrModulos)){
+
+				$objInfraParametroDTO = new InfraParametroDTO();
+				$objInfraParametroDTO->setStrNome('VERSAO_MODULO_PETICIONAMENTO');
+				$objInfraParametroDTO->retStrValor();
+
+				$objInfraParametroBD = new InfraParametroBD(BancoSEI::getInstance());
+				$arrObjInfraParametroDTO = $objInfraParametroBD->consultar($objInfraParametroDTO);
+				$strVersaoInstalada = $arrObjInfraParametroDTO->getStrValor();
+
+				$bolVersaoValida = version_compare($strVersaoInstalada, self::getPeticionamentoMenorVersaoRequerida(), '>=');
+
+			}
+				
+			return $bolVersaoValida;
+				
+		}
+
 	}
 ?>
