@@ -241,6 +241,7 @@ class MdPesqBuscaProtocoloExterno{
 				$objProtocoloDTO->retNumIdHipoteseLegal();
 				$objProtocoloDTO = $objProtocoloRN->consultarRN0186($objProtocoloDTO);
 				$idProcedimento = '';
+
 				if ($objProtocoloDTO) {
 				    if ($objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO) {
 						$objDocumentoRN = new DocumentoRN();
@@ -412,9 +413,15 @@ class MdPesqBuscaProtocoloExterno{
 				    }
 				}
 
-				// Protege contra a não idexação no solr quando o processo passa de público para restrito.
+				// Protege contra a não idexação no solr quando o processo ou documento passa de público para restrito ou quando o documento possui intimações não cumpridas:
 				if ($objProtocoloDTO) {
-				    if (($objProtocoloDTO->getStrStaProtocolo() == ProtocoloRN::$TP_PROCEDIMENTO && $objProtocoloDTO->getStrStaNivelAcessoGlobal() != ProtocoloRN::$NA_PUBLICO && !$bolPesquisaProcessoRestrito) || ($objProtocoloDTO->getStrStaProtocolo() == ProtocoloRN::$TP_PROCEDIMENTO && $objProtocoloDTO->getStrStaNivelAcessoGlobal() == ProtocoloRN::$NA_SIGILOSO)) {
+					if (
+						
+						(($objProtocoloDTO->getStrStaProtocolo() == ProtocoloRN::$TP_PROCEDIMENTO && $objProtocoloDTO->getStrStaNivelAcessoGlobal() != ProtocoloRN::$NA_PUBLICO && !$bolPesquisaProcessoRestrito) || ($objProtocoloDTO->getStrStaProtocolo() == ProtocoloRN::$TP_PROCEDIMENTO && $objProtocoloDTO->getStrStaNivelAcessoGlobal() == ProtocoloRN::$NA_SIGILOSO)) || 
+						($objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO && $objProtocoloDTO->getStrStaNivelAcessoGlobal() != ProtocoloRN::$NA_PUBLICO) || 
+						( PesquisaIntegracao::verificaSeModPeticionamentoVersaoMinima() && !is_null($objProtocoloDTO->getDblIdProtocolo()) && !(new MdPetIntCertidaoRN())->verificaDocumentoEAnexoIntimacaoNaoCumprida([$objProtocoloDTO->getDblIdProtocolo(),false,false,true]) )
+					
+					)  {
 
 						$tituloCompleto = 'ACESSO RESTRITO';
 						$titulo = 'ACESSO RESTRITO';
@@ -423,18 +430,7 @@ class MdPesqBuscaProtocoloExterno{
 						unset($arrMetatags['Unidade']);
 						unset($arrMetatags['Inclusão']);
 						$snippet = 'ACESSO RESTRITO';
-				    }
-				}
-				// Protege contra a nao indexacao no solr quando o documento passa de publico para restrito
-				if ($objProtocoloDTO) {
-				    if ($objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO && $objProtocoloDTO->getStrStaNivelAcessoGlobal() != ProtocoloRN::$NA_PUBLICO) {
-						$tituloCompleto = 'ACESSO RESTRITO';
-						$titulo = 'ACESSO RESTRITO';
-						$strProtocoloDocumento = "";
-						unset($arrMetatags['Usuário']);
-						unset($arrMetatags['Unidade']);
-						unset($arrMetatags['Inclusão']);
-						$snippet = 'ACESSO RESTRITO';
+
 				    }
 				}
 

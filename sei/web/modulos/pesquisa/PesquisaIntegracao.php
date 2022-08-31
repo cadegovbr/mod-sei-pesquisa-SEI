@@ -3,7 +3,7 @@
 		
 		public function getNome()
 		{
-			return 'Pesquisa Pública';
+			return 'SEI Pesquisa Pública';
 		}
 		
 		public function getVersao()
