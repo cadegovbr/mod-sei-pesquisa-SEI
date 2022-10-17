@@ -320,7 +320,7 @@ try {
 				}else{
 					$strResultado .= '<td align="center"><span class="retiraAncoraPadraoAzul">'.$objDocumentoDTO->getStrProtocoloDocumentoFormatado().'</span>';
 					$strResultado .= '<img src="/infra_css/imagens/espaco.gif">';
-					$strResultado .= '<img src="../peticionamento/imagens/png/intimacao_nao_cumprida_doc_anexo.png" style="vertical-align: middle; width: 20px; margin-bottom: -3px;" title="Acesso Restrito. &#13'.'Documento com acesso restrito provisoriamente em razão de Intimação Eletrônica ainda não cumprida">';
+					$strResultado .= '<img src="../peticionamento/imagens/svg/intimacao_nao_cumprida_doc_anexo.svg" style="vertical-align: middle; width: 20px; margin-bottom: -3px;" title="Acesso Restrito. &#13'.'Documento com acesso restrito provisoriamente em razão de Intimação Eletrônica ainda não cumprida">';
 				}
 
 			}else{
