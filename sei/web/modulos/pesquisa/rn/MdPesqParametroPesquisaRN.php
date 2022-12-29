@@ -22,6 +22,7 @@ class MdPesqParametroPesquisaRN extends InfraRN {
   public static $TA_MENU_USUARIO_EXTERNO = 'MENU_USUARIO_EXTERNO';
   public static $TA_METADADOS_PROCESSO_RESTRITO = 'METADADOS_PROCESSO_RESTRITO';
   public static $TA_PROCESSO_RESTRITO = 'PROCESSO_RESTRITO';
+  public static $TA_DATA_CORTE = 'DATA_CORTE';
 
   public function __construct()
   {
@@ -201,6 +202,26 @@ class MdPesqParametroPesquisaRN extends InfraRN {
       throw new InfraException('Erro cadastrando Parâmetro da Pesquisa.',$e);
     }
   }
+
+    protected function existeDataCortePesquisaConectado(){
+
+        $objParametroPesquisaDTO = new MdPesqParametroPesquisaDTO();
+        $objParametroPesquisaDTO->setStrNome('DATA_CORTE');
+        $objParametroPesquisaDTO->retStrValor();
+        $objParametroPesquisaDTO = (new MdPesqParametroPesquisaBD($this->getObjInfraIBanco()))->consultar($objParametroPesquisaDTO);
+
+        if($objParametroPesquisaDTO && !empty($objParametroPesquisaDTO->getStrValor())) {
+            $data = explode('-', $objParametroPesquisaDTO->getStrValor());
+            if(checkdate($data[1], $data[2], $data[0])){
+                if($objParametroPesquisaDTO->getStrValor() <= date('Y-m-d')){
+                    return $objParametroPesquisaDTO->getStrValor();
+                }
+            }
+        }
+
+        return false;
+
+    }
 
 }
 ?>
