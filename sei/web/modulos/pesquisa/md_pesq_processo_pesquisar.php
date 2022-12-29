@@ -417,7 +417,7 @@ PaginaSEIExterna::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'
                 <div class="row" id="divGeral">
                     <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
                         <label id="lblProtocoloPesquisa" for="txtProtocoloPesquisa" accesskey=""
-                               class="infraLabelOpcional">Nº Processo / Documento:</label>
+                               class="infraLabelOpcional">Nº SEI<br>(protocolo Processo/Documento):</label>
                     </div>
                     <div class="col-sm-12 col-md-8 col-lg-9 col-xl-9">
                         <input type="text" id="txtProtocoloPesquisa" name="txtProtocoloPesquisa"
@@ -428,10 +428,10 @@ PaginaSEIExterna::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'
                 </div>
                 <div class="row" id="divAvancado">
                     <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
-                        <label id="lblPalavrasPesquisa" for="q" accesskey="" class="infraLabelOpcional">Pesquisa Livre:</label>
+                        <label id="lblPalavrasPesquisa" for="q" accesskey="" class="infraLabelOpcional">Texto para Pesquisa:</label>
                     </div>
                     <div class="col-sm-12 col-md-8 col-lg-9 col-xl-9">
-                        <div class="input-group mb-3">
+                        <div class="input-group mb-0">
                             <input type="text" id="q" name="q" class="infraText form-control" style="width: 85%"
                                    value="<?= str_replace('\\', '', str_replace('"', '&quot;', PaginaSEIExterna::tratarHTML($strPalavrasPesquisa))) ?>" tabindex="<?= PaginaSEIExterna::getInstance()->getProxTabDados() ?>"/>
                             <a id="ancAjuda" href="<?= $strLinkAjuda ?>" target="janAjuda" title="Ajuda para Pesquisa" tabindex="<?= PaginaSEIExterna::getInstance()->getProxTabDados() ?>">
@@ -497,14 +497,14 @@ PaginaSEIExterna::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'
                     </div>
                     <div class="col-sm-12 col-md-8 col-lg-9 col-xl-9">
                         <div class="row">
-                            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-5">
+                            <div class="col-6 col-lg-4 col-xl-5">
                                 <div class="input-group mb-3 data">
                                     <input type="text" id="txtDataInicio" name="txtDataInicio" onkeypress="return infraMascaraData(this, event)" class="infraText" value="<?= PaginaSEIExterna::tratarHTML($strDataInicio); ?>" tabindex="<?= PaginaSEIExterna::getInstance()->getProxTabDados() ?>"/>
                                     <img id="imgDataInicio" src="<?= PaginaSEIExterna::getInstance()->getDiretorioSvgGlobal() ?>/calendario.svg" onclick="infraCalendario('txtDataInicio',this);" alt="Selecionar Data Inicial" title="Selecionar Data Inicial" class="infraImgModulo" tabindex="<?= PaginaSEIExterna::getInstance()->getProxTabDados() ?>"/>
 									<label id="lblDataE" for="txtDataE" accesskey="" class="infraLabelOpcional">&nbsp;e&nbsp;</label>
                                 </div>
                             </div>
-                            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-5">
+                            <div class="col-6 col-lg-4 col-xl-5">
                                 <div class="input-group mb-3 data">
                                     <input type="text" id="txtDataFim" name="txtDataFim" onkeypress="return infraMascaraData(this, event)" class="infraText" value="<?= PaginaSEIExterna::tratarHTML($strDataFim); ?>" tabindex="<?= PaginaSEIExterna::getInstance()->getProxTabDados() ?>"/>
 									<img id="imgDataFim" src="<?= PaginaSEIExterna::getInstance()->getDiretorioSvgGlobal() ?>/calendario.svg" onclick="infraCalendario('txtDataFim',this);" alt="Selecionar Data Final" title="Selecionar Data Final" class="infraImgModulo" tabindex="<?= PaginaSEIExterna::getInstance()->getProxTabDados() ?>"/>
@@ -532,7 +532,7 @@ PaginaSEIExterna::getInstance()->abrirBody($strTitulo, 'onload="inicializar();"'
                     </div>
                 <? } ?>
                 <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 mt-4 mt-sm-4 mt-xl-0 mt-lg-0 mt-md-0">
                         <? if ($bolCaptcha) { ?>
                             <input type="submit" id="sbmPesquisar" name="sbmPesquisar" value="Pesquisar" class="infraButton"/>
                             <input type="submit" id="sbmLimpar" name="sbmLimpar" value="Limpar" class="infraButton"/>

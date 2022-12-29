@@ -8,7 +8,7 @@
 		
 		public function getVersao()
 		{
-			return '4.0.1';
+			return '4.1.0';
 		}
 		
 		
