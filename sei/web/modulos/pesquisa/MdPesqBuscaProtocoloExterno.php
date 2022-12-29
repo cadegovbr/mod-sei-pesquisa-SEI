@@ -116,7 +116,7 @@ class MdPesqBuscaProtocoloExterno{
         $parametros->q = utf8_encode($parametros->q);
 
         //MONTA URL DA BUSCA
-        $urlBusca = ConfiguracaoSEI::getInstance()->getValor('Solr', 'Servidor') . '/' . ConfiguracaoSEI::getInstance()->getValor('Solr', 'CoreProtocolos') . '/select?' . http_build_query($parametros) . '&hl=true&hl.snippets=2&hl.fl=content&hl.fragsize=100&hl.maxAnalyzedChars=1048576&hl.alternateField=content&hl.maxAlternateFieldLength=100&hl.maxClauseCount=2000&fl=id,id_prot,id_proc,id_doc,id_tipo_proc,id_serie,id_anexo,id_uni_ger,prot_doc,prot_proc,numero,id_usu_ger,dta_ger,desc';
+        $urlBusca = ConfiguracaoSEI::getInstance()->getValor('Solr', 'Servidor') . '/' . ConfiguracaoSEI::getInstance()->getValor('Solr', 'CoreProtocolos') . '/select?' . http_build_query($parametros) . '&hl=true&hl.snippets=2&hl.fl=content&hl.fragsize=100&hl.maxAnalyzedChars=1048576&hl.alternateField=content&hl.maxAlternateFieldLength=100&hl.maxClauseCount=2000&fl=id,id_prot,id_proc,id_doc,id_tipo_proc,id_serie,id_anexo,id_uni_ger,prot_doc,prot_proc,numero,id_usu_ger,dta_ger,dta_inc,id_assin,sta_prot,desc';
         $resultados = file_get_contents($urlBusca, true);
 
         if ($resultados == '') {
@@ -151,11 +151,25 @@ class MdPesqBuscaProtocoloExterno{
 
         for ($i = 0; $i < count($registros); $i++) {
 
-            $isPublico = true;
+            $isPublico      = true;
+            $idProtocolo    = InfraSolrUtil::obterTag($registros[$i], 'id_prot', 'long');
+            $staProtocolo   = InfraSolrUtil::obterTag($registros[$i], 'sta_prot', 'str');
+            $strAssinado    = InfraSolrUtil::obterTag($registros[$i], 'id_assin', 'str');
+            $dtaCorteDoc    = explode('T', InfraSolrUtil::obterTag($registros[$i], 'dta_inc', 'date'))[0];
 
-            $idProtocolo = InfraSolrUtil::obterTag($registros[$i], 'id_prot', 'long');
+            // REMOVE DOCUMENTOS GERADOS NAO ASSINADOS EXCETO OS FORMULARIOS AUTOMATICOS
+            if($staProtocolo == ProtocoloRN::$TP_DOCUMENTO_GERADO && is_null($strAssinado)){
+                $objDocumentoDTO = new DocumentoDTO();
+                $objDocumentoDTO->setDblIdDocumento($idProtocolo);
+                $objDocumentoDTO->retStrStaDocumento();
+                $objDocumentoDTO = (new DocumentoRN())->consultarRN0005($objDocumentoDTO);
+                if(!empty($objDocumentoDTO) && $objDocumentoDTO->getStrStaDocumento() != DocumentoRN::$TD_FORMULARIO_AUTOMATICO){
+                    $removidos++;
+                    continue;
+                }
+            }
 
-            // VERIFICANDO O ACESSO LOCAL DO DOCUMENTO
+            // VERIFICANDO O ACESSO LOCAL DO PROTOCOLO
             $objProtocoloDTO = new ProtocoloDTO();
             $objProtocoloDTO->retStrStaNivelAcessoGlobal();
             $objProtocoloDTO->retStrStaNivelAcessoLocal();
@@ -168,31 +182,53 @@ class MdPesqBuscaProtocoloExterno{
             $objProtocoloDTO->setDblIdProtocolo($idProtocolo);
             $objProtocoloDTO = (new ProtocoloRN())->consultarRN0186($objProtocoloDTO);
 
-            if($objProtocoloDTO){
+            if(!empty($objProtocoloDTO)){
 
-                $isDocumento = in_array($objProtocoloDTO->getStrStaProtocolo(), [ProtocoloRN::$TP_DOCUMENTO_GERADO, ProtocoloRN::$TP_DOCUMENTO_RECEBIDO]) ? true : false;
-                $acessoLocal = $objProtocoloDTO->getStrStaNivelAcessoLocal() == ProtocoloRN::$NA_PUBLICO ? 'publico' : 'restrito';
+                $isPublico = ($objProtocoloDTO->getStrStaNivelAcessoLocal() == ProtocoloRN::$NA_PUBLICO);
 
-                $isPublico = ($acessoLocal == 'publico');
+                if($objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO){
 
-                if($isDocumento && $isPublico){
-                    // VERIFICANDO O ACESSO LOCAL DO PROCESSO PAI DO DOCUMENTO
-                    $objProcessoDTO = new ProtocoloDTO();
-                    $objProcessoDTO->retStrStaNivelAcessoGlobal();
-                    $objProcessoDTO->retStrStaNivelAcessoLocal();
-                    $objProcessoDTO->setStrStaProtocolo(ProtocoloRN::$TP_PROCEDIMENTO);
-                    $objProcessoDTO->setStrProtocoloFormatado(InfraSolrUtil::obterTag($registros[$i], 'prot_proc', 'str'));
-                    $objProcessoDTO = (new ProtocoloRN())->consultarRN0186($objProcessoDTO);
+                    if($isPublico){
+                        // VERIFICANDO O ACESSO LOCAL DO PROCESSO PAI DO DOCUMENTO
+                        $objProcessoDTO = new ProtocoloDTO();
+                        $objProcessoDTO->retStrStaNivelAcessoGlobal();
+                        $objProcessoDTO->retStrStaNivelAcessoLocal();
+                        $objProcessoDTO->setStrStaProtocolo(ProtocoloRN::$TP_PROCEDIMENTO);
+                        $objProcessoDTO->setStrProtocoloFormatado(InfraSolrUtil::obterTag($registros[$i], 'prot_proc', 'str'));
+                        $objProcessoDTO = (new ProtocoloRN())->consultarRN0186($objProcessoDTO);
 
-                    if($objProcessoDTO){
-                        $isPublico = $objProcessoDTO->getStrStaNivelAcessoLocal() == 0 ? true : false;
+                        if(!empty($objProcessoDTO)){
+                            $isPublico = $objProcessoDTO->getStrStaNivelAcessoLocal() == 0;
+                        }
                     }
-                }
 
-                if( $isDocumento ){
+                    $objDocumentoDTO = new DocumentoDTO();
+                    $objDocumentoDTO->setDblIdDocumento($idProtocolo);
+                    $objDocumentoDTO->retDblIdDocumento();
+                    $objDocumentoDTO->retDblIdProcedimento();
+                    $objDocumentoDTO->retNumIdSerie();
+                    $objDocumentoDTO->retStrNomeSerie();
+                    $objDocumentoDTO->retStrNumero();
+                    $objDocumentoDTO->retStrStaDocumento();
+                    $objDocumentoDTO = (new DocumentoRN())->consultarRN0005($objDocumentoDTO);
+
+                    if( $objProtocoloDTO->getStrStaProtocolo() == ProtocoloRN::$TP_DOCUMENTO_GERADO && !empty($objDocumentoDTO) && in_array($objDocumentoDTO->getStrStaDocumento(), [DocumentoRN::$TD_EDITOR_INTERNO, DocumentoRN::$TD_FORMULARIO_GERADO]) ){
+                        $objAssinaturaDTO = new AssinaturaDTO();
+                        $objAssinaturaDTO->retDthAberturaAtividade();
+                        $objAssinaturaDTO->setDblIdDocumento($objProtocoloDTO->getDblIdProtocolo());
+                        $objAssinaturaDTO->setOrdNumIdAssinatura(InfraDTO::$TIPO_ORDENACAO_ASC);
+                        $objAssinaturaDTO->setNumMaxRegistrosRetorno(1);
+                        $arrObjAssinaturaDTO = (new AssinaturaRN())->listarRN1323($objAssinaturaDTO);
+                        if (!empty($arrObjAssinaturaDTO)) {
+                            if($arrObjAssinaturaDTO[0] != null && $arrObjAssinaturaDTO[0]->isSetDthAberturaAtividade()){
+                                $dtaCorteDoc = implode('-', array_reverse(explode('/', substr($arrObjAssinaturaDTO[0]->getDthAberturaAtividade(),0,10))));
+                            }
+                        }
+                    }
+
                     if(
-                        ( PesquisaIntegracao::verificaSeModPeticionamentoVersaoMinima() && !is_null($objProtocoloDTO->getDblIdProtocolo()) && !(new MdPetIntCertidaoRN())->verificaDocumentoEAnexoIntimacaoNaoCumprida([$objProtocoloDTO->getDblIdProtocolo(),false,false,true]) ) ||
-                        ( $dtaParamCortePesquisa > date('Y-m-d', strtotime(InfraSolrUtil::obterTag($registros[$i], 'dta_ger', 'date'))) )
+                        ( PesquisaIntegracao::verificaSeModPeticionamentoVersaoMinima() && !(new MdPetIntCertidaoRN())->verificaDocumentoEAnexoIntimacaoNaoCumprida([$objProtocoloDTO->getDblIdProtocolo(),false,false,true]) ) ||
+                        ( $dtaParamCortePesquisa > $dtaCorteDoc )
                     ){
                         $isPublico = false;
                     }
@@ -264,15 +300,6 @@ class MdPesqBuscaProtocoloExterno{
 
             if ($objProtocoloDTO) {
                 if ($objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO) {
-                    $objDocumentoRN = new DocumentoRN();
-                    $objDocumentoDTO = new DocumentoDTO();
-                    $objDocumentoDTO->setDblIdDocumento($idProtocolo);
-                    $objDocumentoDTO->retDblIdDocumento();
-                    $objDocumentoDTO->retDblIdProcedimento();
-                    $objDocumentoDTO->retNumIdSerie();
-                    $objDocumentoDTO->retStrNomeSerie();
-                    $objDocumentoDTO->retStrNumero();
-                    $objDocumentoDTO = $objDocumentoRN->consultarRN0005($objDocumentoDTO);
 
                     $idProcedimento = $objDocumentoDTO->getDblIdProcedimento();
                     $dados["identificacao_protocolo"] = $objDocumentoDTO->getStrNomeSerie() . ' ' . $objDocumentoDTO->getStrNumero();
