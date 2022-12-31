@@ -27,7 +27,7 @@ try {
 	$arrObjParametroPesquisaDTO = $objParametroPesquisaRN->listar($objParametroPesquisaDTO);
 	$arrParametroPesquisaDTO = InfraArray::converterArrInfraDTO($arrObjParametroPesquisaDTO,'Valor','Nome');
 
-	$bolPesquisaProcessoRestrito = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_PROCESSO_RESTRITO] == 'S' ? true : false;
+    $bolPesquisaDocumentoProcessoRestrito = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_PESQUISA_DOCUMENTO_PROCESSO_RESTRITO] == 'S' ? true : false;
 	$bolListaDocumentoProcessoPublico = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO] == 'S' ? true : false;
 	$bolListaAndamentoProcessoPublico = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_ANDAMENTO_PROCESSO_PUBLICO] == 'S' ? true : false;
 	$bolCaptchaGerarPdf = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_CAPTCHA_PDF] == 'S' ? true : false;
@@ -79,10 +79,8 @@ try {
         die('Processo não encontrado.');
     }
 
-	if(!$bolLinkMetadadosProcessoRestrito || !$bolPesquisaProcessoRestrito){
-		if ($objProcedimentoDTO->getStrStaNivelAcessoGlobalProtocolo()!= ProtocoloRN::$NA_PUBLICO){
-			die('Processo não encontrado.');
-		}
+	if(!$bolLinkMetadadosProcessoRestrito && $objProcedimentoDTO->getStrStaNivelAcessoGlobalProtocolo() != ProtocoloRN::$NA_PUBLICO){
+	    die('Processo não encontrado.');
 	}
 	
 	//Carregar interessados no processo

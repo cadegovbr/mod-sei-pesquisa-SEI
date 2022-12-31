@@ -154,7 +154,7 @@ class MdPesqAtualizadorSeiRN extends InfraRN
             array('Nome' => MdPesqParametroPesquisaRN::$TA_METADADOS_PROCESSO_RESTRITO, 'Valor' => 'S'),
             array('Nome' => MdPesqParametroPesquisaRN::$TA_LISTA_ANDAMENTO_PROCESSO_RESTRITO, 'Valor' => 'S'),
             array('Nome' => MdPesqParametroPesquisaRN::$TA_DESCRICAO_PROCEDIMENTO_ACESSO_RESTRITO, 'Valor' => 'Processo ou Documento de Acesso Restrito - Para condições de acesso verifique a <a style="font-size: 1em;" href="http://[orgao]/link_condicao_acesso" target="_blank">Condição de Acesso</a> ou entre em contato pelo e-mail: sei@orgao.gov.br'),
-            array('Nome' => MdPesqParametroPesquisaRN::$TA_DOCUMENTO_PROCESSO_PUBLICO, 'Valor' => 'S'),
+            array('Nome' => MdPesqParametroPesquisaRN::$TA_PESQUISA_DOCUMENTO_PROCESSO_RESTRITO, 'Valor' => 'S'),
             array('Nome' => MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO, 'Valor' => 'S'),
             array('Nome' => MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO, 'Valor' => 'S'),
             array('Nome' => MdPesqParametroPesquisaRN::$TA_AUTO_COMPLETAR_INTERESSADO, 'Valor' => 'S'),
@@ -213,12 +213,22 @@ class MdPesqAtualizadorSeiRN extends InfraRN
     {
 
         $this->logar('EXECUTANDO A INSTALAÇÃO/ATUALIZAÇÃO DA VERSÃO 4.1.0 DO ' . $this->nomeDesteModulo . ' NA BASE DO SEI');
-        $this->logar('INSERINDO PARAMETRO DATA_CORTE NA TABELA md_pesq_parametro');
+        $this->logar('INSERINDO PARAMETRO "DATA_CORTE" NA TABELA md_pesq_parametro');
 
         $MdPesqParametroPesquisaDTO = new MdPesqParametroPesquisaDTO();
         $MdPesqParametroPesquisaDTO->setStrNome('DATA_CORTE');
         $MdPesqParametroPesquisaDTO->setStrValor(null);
         $MdPesqParametroPesquisaDTO = (new MdPesqParametroPesquisaRN())->cadastrar($MdPesqParametroPesquisaDTO);
+
+        $this->logar('REMOVENDO PARAMETRO "PROCESSO_RESTRITO" NA TABELA md_pesq_parametro');
+
+        $mdPesqParametroPesquisaDTO = new MdPesqParametroPesquisaDTO();
+        $mdPesqParametroPesquisaDTO->setStrNome('PROCESSO_RESTRITO');
+        (new MdPesqParametroPesquisaBD(BancoSEI::getInstance()))->excluir($mdPesqParametroPesquisaDTO);
+
+        $this->logar('ATUALIZANDO NOME DO PARAMETRO "DOCUMENTO_PROCESSO_PUBLICO" PARA "PESQUISA_DOCUMENTO_PROCESSO_RESTRITO"');
+        $sqlTabela = 'UPDATE md_pesq_parametro SET nome=\'PESQUISA_DOCUMENTO_PROCESSO_RESTRITO\' WHERE nome =\'DOCUMENTO_PROCESSO_PUBLICO\'';
+        BancoSEI::getInstance()->executarSql($sqlTabela);
 
         $this->logar('ATUALIZANDO PARÂMETRO ' . $this->nomeParametroModulo . ' NA TABELA infra_parametro PARA CONTROLAR A VERSÃO DO MÓDULO');
         BancoSEI::getInstance()->executarSql('UPDATE infra_parametro SET valor = \'4.1.0\' WHERE nome = \'' . $this->nomeParametroModulo . '\' ');

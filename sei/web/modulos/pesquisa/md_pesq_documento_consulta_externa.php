@@ -27,8 +27,9 @@ try {
 
 	$arrParametroPesquisaDTO = InfraArray::converterArrInfraDTO($arrObjParametroPesquisaDTO,'Valor','Nome');
 
-	$bolListaDocumentoProcessoRestrito = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO] == 'S' ? true : false;
-	$bolListaDocumentoProcessoPublico = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO] == 'S' ? true : false;
+	$bolListaDocumentoProcessoRestrito  = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO] == 'S' ? true : false;
+	$bolListaDocumentoProcessoPublico   = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO] == 'S' ? true : false;
+    $bolLinkMetadadosProcessoRestrito   = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_METADADOS_PROCESSO_RESTRITO] == 'S' ? true : false;
 
 	$objDocumentoDTO = new DocumentoDTO();
 	$objDocumentoDTO->retDblIdDocumento();
@@ -51,11 +52,14 @@ try {
 	$objDocumentoRN = new DocumentoRN();
 	$objDocumentoDTO = $objDocumentoRN->consultarRN0005($objDocumentoDTO);
 
-	if ($objDocumentoDTO==null){
+	$isLocalPublico = $objDocumentoDTO->getStrStaNivelAcessoGlobalProtocolo() == ProtocoloRN::$NA_PUBLICO;
+	$isGlobalPublico = $objDocumentoDTO->getStrStaNivelAcessoGlobalProtocolo() == ProtocoloRN::$NA_PUBLICO;
+
+	if ($objDocumentoDTO==null || !$bolLinkMetadadosProcessoRestrito){
 	 die('Documento não encontrado.');
 	}
 
-	if(!$bolListaDocumentoProcessoPublico){
+	if(!$bolListaDocumentoProcessoPublico && $isLocalPublico){
 	 die('Documento não encontrado');
 	}
 
