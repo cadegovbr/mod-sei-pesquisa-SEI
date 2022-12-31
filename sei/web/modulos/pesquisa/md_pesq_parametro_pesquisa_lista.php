@@ -38,11 +38,10 @@ try {
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_CAPTCHA, 'Valor' => $_POST['chkCapcthaPesquisa']),
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_CAPTCHA_PDF, 'Valor' => $_POST['chkCapcthaGerarPdf']),
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_LISTA_ANDAMENTO_PROCESSO_PUBLICO, 'Valor' => $_POST['chkListaAndamentoProcessoPublico']),
-                        array('Nome' => MdPesqParametroPesquisaRN::$TA_PROCESSO_RESTRITO, 'Valor' => $_POST['chkProcessoRestrito']),
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_METADADOS_PROCESSO_RESTRITO, 'Valor' => $_POST['chkMetaDadosProcessoRestrito']),
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_LISTA_ANDAMENTO_PROCESSO_RESTRITO, 'Valor' => $_POST['chkListaAndamentoProcessoRestrito']),
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_DESCRICAO_PROCEDIMENTO_ACESSO_RESTRITO, 'Valor' => trim($_POST['txtDescricaoProcessoAcessoRestrito'])),
-                        array('Nome' => MdPesqParametroPesquisaRN::$TA_DOCUMENTO_PROCESSO_PUBLICO, 'Valor' => $_POST['chkDocumentoProcessoPublico']),
+                        array('Nome' => MdPesqParametroPesquisaRN::$TA_PESQUISA_DOCUMENTO_PROCESSO_RESTRITO, 'Valor' => $_POST['chkPesquisaDocumentoProcessoRestrito'] ?? 'N'),
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO, 'Valor' => $_POST['chkListaDocumentoProcessoPublico']),
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO, 'Valor' => $_POST['chkListaDocumentoProcessoRestrito']),
                         array('Nome' => MdPesqParametroPesquisaRN::$TA_AUTO_COMPLETAR_INTERESSADO, 'Valor' => $_POST['chkAutoCompletarInteressado']),
@@ -117,6 +116,19 @@ PaginaSEI::getInstance()->abrirJavaScript();
     return validarCadastro();
     }
 
+    $(document).ready(function(){
+        $('input[name=chkMetaDadosProcessoRestrito]').change(function(e){
+            if($(this).val() == 'N'){
+                $("input[name=chkPesquisaDocumentoProcessoRestrito][value=N]").prop('checked', true);
+                $('input[name=chkPesquisaDocumentoProcessoRestrito]').prop({disabled: true});
+            }else{
+                $('input[name=chkPesquisaDocumentoProcessoRestrito]').prop({disabled: false});
+            }
+        });
+    });
+
+
+
 <?
 PaginaSEI::getInstance()->fecharJavaScript();
 PaginaSEI::getInstance()->fecharHead();
@@ -170,13 +182,32 @@ PaginaSEI::getInstance()->abrirAreaDados(null);
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
                 <fieldset class="infraFieldset sizeFieldset form-control" style="height: auto">
-                    <legend class="infraLegend">Processos</legend>
+                    <legend class="infraLegend">Parâmetros de Pesquisa</legend>
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
                             <div class="form-group">
                                 <div>
                                     <label id="lblListaAndamentoProcessoPublico" for="chkListaAndamentoProcessoPublico" class="infraLabelObrigatorio">
-                                        Habilitar a exibição dos Andamentos nos processos com nível de acesso global "Restrito":
+                                        Exibir Lista de Andamentos nos processos com nível de acesso global Público:
+                                        <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
+                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), na tela do Processo na Pesquisa Pública será exibida a Lista de Andamentos quando o processo tiver nível de acesso global &quot;Público&quot;.\n \n Quando desabilitado, a Lista de Andamentos não será exibida mesmo quando o processo tiver nível de acesso global &quot;Público&quot;.','Ajuda');" onmouseout="return infraTooltipOcultar();">
+                                            <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
+                                        </a>
+                                    </label>
+                                </div>
+                                <input id="chkListaAndamentoProcessoPublico" name="chkListaAndamentoProcessoPublico" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_ANDAMENTO_PROCESSO_PUBLICO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                                <label id="lblListaAndamentoProcessoPublico" for="chkListaAndamentoProcessoPublico" class="infraLabelRadio">Sim</label>
+                                <input id="chkListaAndamentoProcessoPublicoNao" name="chkListaAndamentoProcessoPublico" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_ANDAMENTO_PROCESSO_PUBLICO] == 'N') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                                <label id="lblListaAndamentoProcessoPublicoNao" for="chkListaAndamentoProcessoPublicoNao" class="infraLabelRadio">Não</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
+                            <div class="form-group">
+                                <div>
+                                    <label id="lblListaAndamentoProcessoPublico" for="chkListaAndamentoProcessoPublico" class="infraLabelObrigatorio">
+                                        Exibir Lista de Andamentos nos processos com nível de acesso global Restrito:
                                         <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
                                            onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), na tela do Processo na Pesquisa Pública será exibida a Lista de Andamentos mesmo quando o processo tiver nível de acesso global &quot;Restrito&quot;.\n \n Quando desabilitado, a Lista de Andamentos não será exibida quando o processo tiver nível de acesso global &quot;Restrito&quot;.','Ajuda');" onmouseout="return infraTooltipOcultar();">
                                             <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
@@ -190,22 +221,23 @@ PaginaSEI::getInstance()->abrirAreaDados(null);
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
                             <div class="form-group">
                                 <div>
-                                    <label id="lblListaAndamentoProcessoPublico" for="chkListaAndamentoProcessoPublico" class="infraLabelObrigatorio">
-                                        Habilitar a exibição dos Andamentos nos processos com nível de acesso global "Público":
+                                    <label id="lblListaDocumentoProcessoPublico" for="chkListaDocumentoProcessoPublico" class="infraLabelObrigatorio">
+                                        Exibir Lista de Protocolos e pesquisar nos processos com nível de acesso global Público:
                                         <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), na tela do Processo na Pesquisa Pública será exibida a Lista de Andamentos quando o processo tiver nível de acesso global &quot;Público&quot;.\n \n Quando desabilitado, a Lista de Andamentos não será exibida mesmo quando o processo tiver nível de acesso global &quot;Público&quot;.','Ajuda');" onmouseout="return infraTooltipOcultar();">
+                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), na tela do processo na Pesquisa Pública será exibida a Lista de Protocolos quando o processo tiver nível de acesso global &quot;Público&quot; e, por consequência, permitirá a pesquisa pelos protocolos dos documentos e dentro do conteúdo dos documentos. \n \n Quando desabilitado, a Lista de Protocolos não será exibida mesmo o processo sendo integralmente &quot;Público&quot; e não retornará a pesquisa pelos protocolos dos documentos e dentro do conteúdo dos documentos. Retornará a pesquisa apenas pelo protocolo do processo.','Ajuda');" onmouseout="return infraTooltipOcultar();">
                                             <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
                                         </a>
                                     </label>
                                 </div>
-                                <input id="chkListaAndamentoProcessoPublico" name="chkListaAndamentoProcessoPublico" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_ANDAMENTO_PROCESSO_PUBLICO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblListaAndamentoProcessoPublico" for="chkListaAndamentoProcessoPublico" class="infraLabelRadio">Sim</label>
-                                <input id="chkListaAndamentoProcessoPublicoNao" name="chkListaAndamentoProcessoPublico" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_ANDAMENTO_PROCESSO_PUBLICO] == 'N') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblListaAndamentoProcessoPublicoNao" for="chkListaAndamentoProcessoPublicoNao" class="infraLabelRadio">Não</label>
+                                <input id="chkListaDocumentoProcessoPublico" name="chkListaDocumentoProcessoPublico" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                                <label id="lblListaDocumentoProcessoPublico" for="chkListaDocumentoProcessoPublico" class="infraLabelRadio">Sim</label>
+                                <input id="chkListaDocumentoProcessoPublicoNao" name="chkListaDocumentoProcessoPublico" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO] == 'N') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                                <label id="lblListaDocumentoProcessoPublicoNao" for="chkListaDocumentoProcessoPublicoNao" class="infraLabelRadio">Não</label>
                             </div>
                         </div>
                     </div>
@@ -213,29 +245,30 @@ PaginaSEI::getInstance()->abrirAreaDados(null);
                         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
                             <div class="form-group">
                                 <div>
-                                    <label id="lblProcessoRestrito" for="chkProcessoRestrito" class="infraLabelObrigatorio">
-                                        Habilitar a pesquisa em processos com nível de acesso global "Restrito":
+                                    <label id="lblchkListaDocumentoProcessoRestrito" for="chkListaDocumentoProcessoRestrito" class="infraLabelObrigatorio">
+                                        Exibir Lista de Protocolos e pesquisar nos processos com nível de acesso global Restrito:
                                         <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), permite que processos com nível de acesso global &quot;Restrito&quot; sejam retornados nos resultados da Pesquisa Pública.\n \n Quando desabilitado, suprime os processos com nível de acesso global &quot;Restrito&quot; dos resultados da Pesquisa Pública.','Ajuda');" onmouseout="return infraTooltipOcultar();">
+                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), na tela do processo na Pesquisa Pública será exibida a Lista de Protocolos mesmo quando o processo tiver nível de acesso global &quot;Restrito&quot; e, por consequência, permitirá a pesquisa pelos protocolos dos documentos e dentro do conteúdo dos documentos públicos. \n \n Quando desabilitado, a Lista de Protocolos não será exibida quando o processo tiver nível de acesso global &quot;Restrito&quot; e não retornará a pesquisa pelos protocolos dos documentos e dentro do conteúdo dos documentos públicos. Retornará a pesquisa apenas pelo protocolo do processo.','Ajuda');" onmouseout="return infraTooltipOcultar();">
                                             <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
                                         </a>
                                     </label>
                                 </div>
-                                <input id="chkProcessoRestrito" name="chkProcessoRestrito" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_PROCESSO_RESTRITO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblProcessoRestrito" for="chkProcessoRestrito" class="infraLabelRadio">Sim</label>
-                                <input id="chkProcessoRestritoNao" name="chkProcessoRestrito" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_PROCESSO_RESTRITO] == 'N') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblProcessoRestritoNao" for="chkProcessoRestritoNao" class="infraLabelRadio">Não</label>
+                                <input id="chkListaDocumentoProcessoRestrito" name="chkListaDocumentoProcessoRestrito" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                                <label id="lblListaDocumentoProcessoRestrito" for="chkListaDocumentoProcessoRestrito" class="infraLabelRadio">Sim</label>
+                                <input id="chkListaDocumentoProcessoRestritoNao" name="chkListaDocumentoProcessoRestrito" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO] == 'N') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+                                <label id="lblListaDocumentoProcessoRestritoNao" for="chkListaDocumentoProcessoRestritoNao" class="infraLabelRadio">Não</label>
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
                             <div class="form-group">
                                 <div>
                                     <label id="lblMetaDadosProcessoRestrito" for="chkMetaDadosProcessoRestrito" class="infraLabelObrigatorio">
-                                        Habilitar o acesso aos metadados dos processos com nível de acesso global "Restrito":
+                                        Pesquisar e acessar processos com nível de acesso global Restrito:
                                         <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), permite que os metadados do processo com nível de acesso global &quot;Restrito&quot; sejam retornados pela Pesquisa Pública e permite também o acesso à tela do processo.\n \n Quando desabilidado, substitui os metadados do processo mostrados no resultado da Pesquisa Pública por texto configurado no campo &quot;Descrição de justificativa de restrição de acesso e orientações para meios alternativos de solicitação de acesso&quot;. Bloqueia também o acesso à tela do processo na Pesquisa Pública caso o usuário tenha o link do processo, desde que o processo esteja com nível de acesso global  &quot;Restrito&quot;.','Ajuda');" onmouseout="return infraTooltipOcultar();">
+                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), no caso de processos com nível de acesso global &quot;Restrito&quot;, permite a pesquisa e acesso ao processo, pelo menos para ver seus metadados. \n \n Quando desabilidado, de forma geral e sobrepondo outros parâmetros, não permite a pesquisa e acesso aos processos com nível de acesso global &quot;Restrito&quot;, pesquisando apenas por protocolo de processo e de documento para confirmar existência, exibindo o tipo, o protocolo e o texto configurado no campo &quot;Justificativa de restrição de acesso e orientações para solicitar acesso&quot;. \n \n Quando desabilitado, automaticamente desabilita também o parâmetro &quot;Pesquisar no conteúdo de documentos públicos nos processos com nível de acesso global Restrito&quot;.','Ajuda');" onmouseout="return infraTooltipOcultar();">
                                             <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
                                         </a>
                                     </label>
@@ -247,83 +280,40 @@ PaginaSEI::getInstance()->abrirAreaDados(null);
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
                             <div class="form-group">
                                 <div>
-                                    <label id="lblDocumentoProcessoPublico" for="chkDocumentoProcessoPublico" class="infraLabelObrigatorio">
-                                        Descrição de justificativa de restrição de acesso e orientações para meios alternativos de solicitação de acesso:
+                                    <label id="lblDocumentoProcessoPublico" for="chkPesquisaDocumentoProcessoRestrito" class="infraLabelObrigatorio">
+                                        Pesquisar no conteúdo de documentos públicos nos processos com nível de acesso global Restrito:
+                                        <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
+                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), permite a pesquisa dentro do conteúdo de documentos públicos nos processos com nível de acesso global &quot;Restrito&quot;. \n \n Quando desabilitado, não permite a pesquisa dentro do conteúdo de documentos públicos nos processo com nível de acesso global &quot;Restrito&quot;, mas não impede a pesquisa pelo protocolo do processo e dos documentos e na tela do processo na Lista de Protocolos dará acesso aos documentos públicos normalmente.','Ajuda');" onmouseout="return infraTooltipOcultar();">
+                                            <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
+                                        </a>
+                                    </label>
+                                </div>
+                                <input id="chkPesquisaDocumentoProcessoRestrito" name="chkPesquisaDocumentoProcessoRestrito" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_PESQUISA_DOCUMENTO_PROCESSO_RESTRITO] == 'S') ? "checked" : "" ?> <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_METADADOS_PROCESSO_RESTRITO] == 'N') ? "disabled" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+								<label id="lblPesquisaDocumentoProcessoRestrito" for="chkPesquisaDocumentoProcessoRestrito" class="infraLabelRadio">Sim</label>
+                                <input id="chkPesquisaDocumentoProcessoRestritoNao" name="chkPesquisaDocumentoProcessoRestrito" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_PESQUISA_DOCUMENTO_PROCESSO_RESTRITO] == 'N') ? "checked" : "" ?> <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_METADADOS_PROCESSO_RESTRITO] == 'N') ? "disabled" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
+								<label id="lblPesquisaDocumentoProcessoRestritoNao" for="chkPesquisaDocumentoProcessoRestritoNao" class="infraLabelRadio">Não</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
+                            <div class="form-group">
+                                <div>
+                                    <label id="lblDocumentoProcessoPublico" for="txtDescricaoProcessoAcessoRestrito" class="infraLabelObrigatorio">
+                                        Justificativa de restrição de acesso e orientações para solicitar acesso:
                                     </label>
                                 </div>
                                 <textarea id="txtDescricaoProcessoAcessoRestrito" name="txtDescricaoProcessoAcessoRestrito" class="infraTextarea" rows="5" style="width: 90%" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"><?= $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_DESCRICAO_PROCEDIMENTO_ACESSO_RESTRITO] ?></textarea>
                             </div>
                         </div>
                     </div>
-                </fieldset>
-            </div>
-        </div>
-        <br/>
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
-                <fieldset class="infraFieldset sizeFieldset form-control" style="height: auto">
-                    <legend class="infraLegend">Documentos</legend>
-                    <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
-                            <div class="form-group">
-                                <div>
-                                    <label id="lblDocumentoProcessoPublico" for="chkDocumentoProcessoPublico" class="infraLabelObrigatorio">
-                                        Habilitar pesquisa em documentos de processos com nível de acesso global "Público":
-                                        <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), realiza pesquisa no conteúdo de documentos Públicos de processos com nível de acesso global &quot;Público&quot;. \n \n Quando desabilitado, não realiza a pesquisa no conteúdo de documentos Públicos mesmo que o processo esteja com nível de acesso global &quot;Público&quot;.','Ajuda');" onmouseout="return infraTooltipOcultar();">
-                                            <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
-                                        </a>
-                                    </label>
-                                </div>
-                                <input id="chkDocumentoProcessoPublico" name="chkDocumentoProcessoPublico" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_DOCUMENTO_PROCESSO_PUBLICO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblDocumentoProcessoPublico" for="chkDocumentoProcessoPublico" class="infraLabelRadio">Sim</label>
-                                <input id="chkDocumentoProcessoPublicoNao" name="chkDocumentoProcessoPublico" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_DOCUMENTO_PROCESSO_PUBLICO] == 'N') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblDocumentoProcessoPublicoNao" for="chkDocumentoProcessoPublicoNao" class="infraLabelRadio">Não</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
-                            <div class="form-group">
-                                <div>
-                                    <label id="lblListaDocumentoProcessoPublico" for="chkListaDocumentoProcessoPublico" class="infraLabelObrigatorio">
-                                        Habilitar a exibição da Lista de Protocolos em processos com nível de acesso global "Público":
-                                        <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), na tela do processo na Pesquisa Pública será exibida a Lista de Protocolos quando o processo tiver nível de acesso global &quot;Público&quot;. \n \n Quando desabilitado, a Lista de Protocolos não será exibida mesmo quando o processo tiver nível de acesso global &quot;Público&quot;.','Ajuda');" onmouseout="return infraTooltipOcultar();">
-                                            <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
-                                        </a>
-                                    </label>
-                                </div>
-                                <input id="chkListaDocumentoProcessoPublico" name="chkListaDocumentoProcessoPublico" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblListaDocumentoProcessoPublico" for="chkListaDocumentoProcessoPublico" class="infraLabelRadio">Sim</label>
-                                <input id="chkListaDocumentoProcessoPublicoNao" name="chkListaDocumentoProcessoPublico" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_PUBLICO] == 'N') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblListaDocumentoProcessoPublicoNao" for="chkListaDocumentoProcessoPublicoNao" class="infraLabelRadio">Não</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-11">
-                            <div class="form-group">
-                                <div>
-                                    <label id="lblchkListaDocumentoProcessoRestrito" for="chkListaDocumentoProcessoRestrito" class="infraLabelObrigatorio">
-                                        Habilitar a exibição da Lista de Protocolos em processos com nível de acesso global "Restrito":
-                                        <a id="btAjuda" tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"
-                                           onmouseover="return infraTooltipMostrar('Quando habilitado (Opção Padrão), na tela do processo na Pesquisa Pública será exibida a Lista de Protocolos mesmo quando o processo tiver nível de acesso global &quot;Restrito&quot;. \n \n Quando desabilitado, a Lista de Protocolos não será exibida quando o processo tiver nível de acesso global &quot;Restrito&quot;.','Ajuda');" onmouseout="return infraTooltipOcultar();">
-                                            <img border="0" class="infraImgModulo" src="/infra_css/svg/ajuda.svg?11">
-                                        </a>
-                                    </label>
-                                </div>
-                                <input id="chkListaDocumentoProcessoRestrito" name="chkListaDocumentoProcessoRestrito" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblListaDocumentoProcessoRestrito" for="chkListaDocumentoProcessoRestrito" class="infraLabelRadio">Sim</label>
-                                <input id="chkListaDocumentoProcessoRestritoNao" name="chkListaDocumentoProcessoRestrito" type="radio" value="N" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO] == 'N') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>
-								<label id="lblListaDocumentoProcessoRestritoNao" for="chkListaDocumentoProcessoRestritoNao" class="infraLabelRadio">Não</label>
-                            </div>
-                        </div>
-                    </div>
+
                 </fieldset>
             </div>
         </div>
@@ -352,7 +342,7 @@ PaginaSEI::getInstance()->abrirAreaDados(null);
                             <div class="form-group">
                                 <div>
                                     <label id="lblMenuUsuarioExterno" for="chkMenuUsuarioExterno" class="infraLabelObrigatorio">
-                                        Habilitar menu com link para a Pesquisa Pública no Acesso Externo do SEI:
+                                        Habilitar menu para a Pesquisa Pública no Acesso Externo do SEI:
                                     </label>
                                 </div>
                                 <input id="chkMenuUsuarioExterno" name="chkMenuUsuarioExterno" type="radio" value="S" class="infraRadio" <?= ($arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_MENU_USUARIO_EXTERNO] == 'S') ? "checked" : "" ?> tabindex="<?= PaginaSEI::getInstance()->getProxTabDados() ?>"/>

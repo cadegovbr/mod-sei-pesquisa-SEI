@@ -24,8 +24,8 @@ class MdPesqBuscaProtocoloExterno{
 
         $arrParametroPesquisaDTO = InfraArray::converterArrInfraDTO($arrObjParametroPesquisaDTO, 'Valor', 'Nome');
 
-        $bolPesquisaDocumentoProcessoPublico = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_DOCUMENTO_PROCESSO_PUBLICO] == 'S' ? true : false;
-        $bolPesquisaProcessoRestrito = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_PROCESSO_RESTRITO] == 'S' ? true : false;
+        $bolPesquisaDocumentoProcessoRestrito = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_PESQUISA_DOCUMENTO_PROCESSO_RESTRITO] == 'S' ? true : false;
+        $bolListaDocumentoProcessoRestrito  = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_LISTA_DOCUMENTO_PROCESSO_RESTRITO] == 'S' ? true : false;
         $bolLinkMetadadosProcessoRestrito = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_METADADOS_PROCESSO_RESTRITO] == 'S' ? true : false;
         $txtDescricaoProcedimentoAcessoRestrito = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_DESCRICAO_PROCEDIMENTO_ACESSO_RESTRITO];
         $bolAutocompletarInterressado = $arrParametroPesquisaDTO[MdPesqParametroPesquisaRN::$TA_AUTO_COMPLETAR_INTERESSADO] == 'S' ? true : false;
@@ -39,32 +39,30 @@ class MdPesqBuscaProtocoloExterno{
             $partialfields = $strParticipanteSolr;
         }
 
+        $grupo = [];
+        $checkbox = ['P', 'G', 'R'];
+
         if (!InfraString::isBolVazia($_REQUEST["partialfields"])) {
             $partialfields = $partialfields . $_REQUEST["partialfields"];
-            $checkbox = array();
+            $checkbox = [];
             if (preg_match("/sta_prot:([A-Z;]+)/i", $partialfields, $checkbox) > 0) {
                 $checkbox = explode(";", $checkbox[1]);
             }
-        } else {
-            $checkbox = array('P', 'G', 'R');
         }
-
-        $grupo = [];
 
         // PESQUISAR EM PROCESSOS
         if (in_array("P", $checkbox)) {
-            array_push($grupo, ($bolPesquisaProcessoRestrito ? "(sta_prot:P)" : "(sta_prot:P AND tipo_aces_g:P)"));
+            array_push($grupo, "(sta_prot:P)");
         }
 
-        if ($bolPesquisaDocumentoProcessoPublico) {
-            // PESQUISAR EM DOCUMENTOS EXTERNOS (RECEBIDOS)
-            if (in_array("R", $checkbox)) {
-                array_push($grupo, ($bolPesquisaProcessoRestrito ? "(sta_prot:R)" : "(sta_prot:R AND tipo_aces_g:P)"));
-            }
-            // PESQUISAR EM DOCUMENTOS INTERNOS (GERADOS)
-            if (in_array("G", $checkbox)) {
-                array_push($grupo, ($bolPesquisaProcessoRestrito ? "(sta_prot:G)" : "(sta_prot:G AND tipo_aces_g:P)"));
-            }
+        // PESQUISAR EM DOCUMENTOS EXTERNOS (RECEBIDOS)
+        if (in_array("R", $checkbox)) {
+            array_push($grupo, "(sta_prot:R)");
+        }
+
+        // PESQUISAR EM DOCUMENTOS INTERNOS (GERADOS)
+        if (in_array("G", $checkbox)) {
+            array_push($grupo, "(sta_prot:G)");
         }
 
         if (count($grupo) > 0) {
@@ -107,9 +105,8 @@ class MdPesqBuscaProtocoloExterno{
 
         // PEGO O TEXTO LIVRE PESQUISADO SE EXISTIR
         $pesquisaLivre = null;
-        $params = explode(' AND ', $parametros->q);
-        preg_match("/\((.*?)\)/", $params[0], $pesqLivre);
-        if (count($pesqLivre) > 0) {
+        preg_match("/\((.*?)\)/", $parametros->q, $pesqLivre);
+        if (count($pesqLivre) > 0 && strpos($pesqLivre[1], '(') !== 0) {
             $pesquisaLivre = $pesqLivre[1];
         }
 
@@ -186,7 +183,11 @@ class MdPesqBuscaProtocoloExterno{
 
                 $isPublico = ($objProtocoloDTO->getStrStaNivelAcessoLocal() == ProtocoloRN::$NA_PUBLICO);
 
-                if($objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO){
+                if($objProtocoloDTO->getStrStaProtocolo() == ProtocoloRN::$TP_PROCEDIMENTO){
+
+                    $isPublico = ($objProtocoloDTO->getStrStaNivelAcessoGlobal() == ProtocoloRN::$NA_PUBLICO);
+
+                }else{
 
                     if($isPublico){
                         // VERIFICANDO O ACESSO LOCAL DO PROCESSO PAI DO DOCUMENTO
@@ -199,6 +200,9 @@ class MdPesqBuscaProtocoloExterno{
 
                         if(!empty($objProcessoDTO)){
                             $isPublico = $objProcessoDTO->getStrStaNivelAcessoLocal() == 0;
+                            if(!$bolPesquisaDocumentoProcessoRestrito && $objProcessoDTO->getStrStaNivelAcessoGlobal() != 0){
+                                $isPublico = false;
+                            }
                         }
                     }
 
@@ -219,10 +223,9 @@ class MdPesqBuscaProtocoloExterno{
                         $objAssinaturaDTO->setOrdNumIdAssinatura(InfraDTO::$TIPO_ORDENACAO_ASC);
                         $objAssinaturaDTO->setNumMaxRegistrosRetorno(1);
                         $arrObjAssinaturaDTO = (new AssinaturaRN())->listarRN1323($objAssinaturaDTO);
-                        if (!empty($arrObjAssinaturaDTO)) {
-                            if($arrObjAssinaturaDTO[0] != null && $arrObjAssinaturaDTO[0]->isSetDthAberturaAtividade()){
-                                $dtaCorteDoc = implode('-', array_reverse(explode('/', substr($arrObjAssinaturaDTO[0]->getDthAberturaAtividade(),0,10))));
-                            }
+
+                        if (!empty($arrObjAssinaturaDTO) && $arrObjAssinaturaDTO[0] != null && $arrObjAssinaturaDTO[0]->isSetDthAberturaAtividade()){
+                            $dtaCorteDoc = implode('-', array_reverse(explode('/', substr($arrObjAssinaturaDTO[0]->getDthAberturaAtividade(),0,10))));
                         }
                     }
 
@@ -238,9 +241,9 @@ class MdPesqBuscaProtocoloExterno{
 
             // Protege contra a não idexação no solr quando o processo ou documento passa de público para restrito ou quando o documento possui intimações não cumpridas:
             if(
-                ( !$isPublico && !$bolPesquisaProcessoRestrito ) ||
                 ( $objProtocoloDTO->getStrStaProtocolo() == ProtocoloRN::$TP_PROCEDIMENTO && $objProtocoloDTO->getStrStaNivelAcessoGlobal() == ProtocoloRN::$NA_SIGILOSO ) ||
-                ( !$isPublico && !is_null($pesquisaLivre) && $pesquisaLivre != InfraSolrUtil::obterTag($registros[$i], 'prot_doc', 'str') )
+                ( !$isPublico && !is_null($pesquisaLivre) && ($pesquisaLivre != InfraSolrUtil::obterTag($registros[$i], 'prot_doc', 'str') || $pesquisaLivre == '\*') ) ||
+                ( $objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO && !$bolListaDocumentoProcessoRestrito && $objProcessoDTO->getStrStaNivelAcessoGlobal() != 0 )
             ){
                 $removidos++;
                 continue;
@@ -387,10 +390,15 @@ class MdPesqBuscaProtocoloExterno{
             // REMOVE TAGS DO TÍTULO
             $tituloCompleto = preg_replace("/&lt;.*?&gt;/", "", $tituloCompleto);
             if ($objProtocoloDTO) {
-                if($objProtocoloDTO->getStrStaNivelAcessoGlobal() != ProtocoloRN::$NA_PUBLICO && $bolPesquisaProcessoRestrito && !$bolLinkMetadadosProcessoRestrito) {
+                if(!$isPublico && !$bolLinkMetadadosProcessoRestrito) {
 
-                    $tituloCompleto = $objProtocoloDTO->getStrProtocoloFormatado();
-                    $strProtocoloDocumento = "";
+                    $titulo = $strNomeTipoProcedimento . " nº " . $dados["protocolo_processo_formatado"];
+                    if($objProtocoloDTO->getStrStaProtocolo() != ProtocoloRN::$TP_PROCEDIMENTO){
+                        $titulo .= " (".trim($dados["identificacao_protocolo"]).")";
+                    }
+                    $strProtocoloDocumento = $dados["protocolo_documento_formatado"];
+                    $tituloCompleto = "<img border=\"0\" src=\"imagens/arvore.svg\" title=\"Acessar\" class=\"arvore\" />";
+                    $tituloCompleto .= $titulo;
 
                     $objHipoteseLegalDTO = new HipoteseLegalDTO();
                     $objHipoteseLegalDTO->retTodos(false);
@@ -405,10 +413,6 @@ class MdPesqBuscaProtocoloExterno{
                     } else {
                         $snippet = !empty($txtDescricaoProcedimentoAcessoRestrito) ? $txtDescricaoProcedimentoAcessoRestrito : 'Processo de Acesso Restrito';
                     }
-
-                    unset($arrMetatags['Usuário']);
-                    unset($arrMetatags['Unidade']);
-                    unset($arrMetatags['Data']);
 
                 }
 
@@ -425,7 +429,7 @@ class MdPesqBuscaProtocoloExterno{
                 $html .= "</td>\n";
                 $html .= "</tr>\n";
 
-                if (!empty($snippet) && $isPublico){
+                if ((!empty($snippet) && $isPublico) || (!$isPublico && !$bolLinkMetadadosProcessoRestrito)){
                     $html .= "<tr>\n";
                     $html .= "<td width=\"99%\" colspan=\"3\" class=\"resSnippet\">\n";
                     $html .= $snippet;
