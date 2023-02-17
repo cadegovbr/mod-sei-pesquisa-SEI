@@ -26,22 +26,7 @@
 			return false;
 		
 		}
-
-		 public function processarControladorAjax($strAcao)
-    {
-
-        $xml = null;
-
-        switch ($_GET['acao_ajax']) {
-
-					 case 'md_pesq_tipo_processo_auto_completar':
-                $arrObjTipoProcessoDTO = MdPesqTipoProcessoINT::autoCompletarTipoProcedimento($_POST['palavras_pesquisa'], $_POST['itens_selecionados']);
-                $xml = InfraAjax::gerarXMLItensArrInfraDTO($arrObjTipoProcessoDTO, 'IdTipoProcedimento', 'Nome');
-                break;
-        }
-			return $xml;
-		}
-
+		
 		public function processarControladorAjaxExterno($strAcaoAjax){
 			$xml = null;
 			
